@@ -1,0 +1,18 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2027
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ParkPal", "ParkPal\ParkPal.shproj", "{F473C5E5-5CA7-4C28-84F3-CF649F329913}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		ParkPal\ParkPal.projitems*{f473c5e5-5ca7-4c28-84f3-cf649f329913}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {81C60503-A155-4804-859D-824E6EE5E895}
+	EndGlobalSection
+EndGlobal
