@@ -1,5 +1,5 @@
-#ParkPal
-###Created by
+# ParkPal
+### Created by
     - Thinesh Balakumar
     - Adam Gover
     - David Gul
@@ -11,16 +11,16 @@
 
 Status
 =================================================
-Version 0.0
-    - Web Version 0.0
-    -iOS Version 0.0
-    -Android Version 0.0
-
+Version 0.0  
 **Add Travis CI status bar thing here**
 
 Description
 ==================================================
 **TODO**
+
+Tasks For Sprint
+==================================================
+- [ ] Add actual tasks here
 
 Set Up
 ==================================================
