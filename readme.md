@@ -14,7 +14,7 @@
 Status
 =================================================
 Version 0.0  
-https://travis-ci.org/klaframboise/ParkPal.svg?branch=master
+[![Build Status](https://travis-ci.org/klaframboise/ParkPal.svg?branch=master)](https://travis-ci.org/klaframboise/ParkPal)
 
 --------------------------------------------------
 Description
