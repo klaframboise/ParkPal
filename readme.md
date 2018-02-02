@@ -14,7 +14,7 @@
 Status
 =================================================
 Version 0.0  
-**Add Travis CI status bar thing here**
+https://travis-ci.org/klaframboise/ParkPal.svg?branch=master
 
 --------------------------------------------------
 Description
