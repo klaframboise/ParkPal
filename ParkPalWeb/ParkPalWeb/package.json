@@ -1,0 +1,9 @@
+{
+  "name": "park-pal-web",
+  "version": "0.0.0",
+  "description": "ParkPalWeb",
+  "main": "server.js",
+  "author": {
+    "name": "Sadhvi"
+  }
+}
