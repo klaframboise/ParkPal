@@ -3,13 +3,17 @@ import { NgModule } from '@angular/core';
 
 
 import { AppComponent } from './app.component';
-import { HeroesComponent } from './heroes/heroes.component';
+import { NavBarComponent } from './nav-bar/nav-bar.component';
+import { MapComponent } from './map/map.component';
+import { SideMenuComponent } from './side-menu/side-menu.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    HeroesComponent
+    NavBarComponent,
+    MapComponent,
+    SideMenuComponent
   ],
   imports: [
     BrowserModule
