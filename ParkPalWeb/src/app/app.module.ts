@@ -7,6 +7,7 @@ import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { MapComponent } from './map/map.component';
 import { SideMenuComponent } from './side-menu/side-menu.component';
 
+import { AgmCoreModule } from '@agm/core';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,10 @@ import { SideMenuComponent } from './side-menu/side-menu.component';
     SideMenuComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyBW2x8Hl0maZULCK0tCUHvKVMROB3u7FMs'
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]
