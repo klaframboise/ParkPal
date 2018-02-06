@@ -1,11 +1,13 @@
 matrix:
     include:
-        notifications:
-            email: false
         - language: csharp
           solution: ParkPal.sln
+          notifications:
+            email: false
           
         - language: node_js
+          notifications:
+            email: false
           before_script:
             - npm install -g @angular/cli
           script:
