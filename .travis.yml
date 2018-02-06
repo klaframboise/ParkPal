@@ -1,5 +1,7 @@
 matrix:
     include:
+        notifications:
+            email: false
         - language: csharp
           solution: ParkPal.sln
           
