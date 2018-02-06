@@ -4,8 +4,8 @@ matrix:
           solution: ParkPal.sln
           
         - language: node_js
-            before_script:
-                - npm install -g firebase-tools
-                - npm install -g @angular/cli
-            script:
-                - ng build --prod
+          before_script:
+            - npm install -g firebase-tools
+            - npm install -g @angular/cli
+          script:
+            - ng build --prod
