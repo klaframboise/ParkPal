@@ -2,9 +2,8 @@ matrix:
     include:
         - language: csharp
           solution: ParkPal.sln
+          
         - language: node_js
-            node_js:
-                - "6.9"
             before_script:
                 - npm install -g firebase-tools
                 - npm install -g @angular/cli
