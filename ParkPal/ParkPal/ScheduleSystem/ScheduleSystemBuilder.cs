@@ -4,7 +4,8 @@ using System.Text;
 
 namespace ParkPal.ScheduleSystem
 {
-    class Class1
+    class ScheduleSystemBuilder
     {
+
     }
 }
