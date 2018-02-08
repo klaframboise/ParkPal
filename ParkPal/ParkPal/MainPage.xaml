@@ -4,6 +4,8 @@
              xmlns:local="clr-namespace:ParkPal"
              x:Class="ParkPal.MainPage">
 
+    <!--this is a comment-->
+    
 	<Label Text="Welcome to Xamarin.Forms!" 
            VerticalOptions="Center" 
            HorizontalOptions="Center" />
@@ -29,5 +31,5 @@
         <Button x:Name="submitButton" Text="Go" IsEnabled="true" Clicked="OnSubmit"/>
         
     </StackLayout>
-    
+
 </ContentPage>
