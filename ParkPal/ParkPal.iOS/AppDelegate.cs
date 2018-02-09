@@ -23,6 +23,10 @@ namespace ParkPal.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             global::Xamarin.Forms.Forms.Init();
+
+            //initalize maps api
+            Xamarin.FormsMaps.Init();
+
             LoadApplication(new App());
 
             return base.FinishedLaunching(app, options);

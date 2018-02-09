@@ -13,5 +13,10 @@ namespace ParkPal
 		{
 			InitializeComponent();
 		}
+
+        void OnSubmit(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new MapPage());
+        }
 	}
 }

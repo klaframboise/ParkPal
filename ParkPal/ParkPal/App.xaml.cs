@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using Xamarin.Forms;
 
 namespace ParkPal
@@ -13,7 +12,7 @@ namespace ParkPal
 		{
 			InitializeComponent();
 
-			MainPage = new ParkPal.MainPage();
+            MainPage = new NavigationPage(new ParkPal.MainPage());
 		}
 
 		protected override void OnStart ()

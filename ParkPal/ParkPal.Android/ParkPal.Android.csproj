@@ -66,6 +66,9 @@
     <PackageReference Include="GTFS">
       <Version>2.0.0-alpha</Version>
     </PackageReference>
+    <PackageReference Include="Xamarin.Forms.Maps">
+      <Version>2.5.0.122203</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
