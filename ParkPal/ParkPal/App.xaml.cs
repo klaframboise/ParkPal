@@ -13,7 +13,7 @@ namespace ParkPal
 		{
 			InitializeComponent();
 
-			MainPage = new ParkPal.MainPage();
+			MainPage mainPage = new ParkPal.MainPage();
 		}
 
 		protected override void OnStart ()

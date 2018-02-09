@@ -19,15 +19,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\Agency.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\ExceptionalService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\GTFSDownloadHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\IScheduleSystemController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\Route.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\ScheduleSystem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\Service.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\Shape.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\Stop.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\StopTime.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\Trip.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\ScheduleSystemBuilder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)SharedResources\GTFSFeedLinks.txt" />
   </ItemGroup>
 </Project>
