@@ -6,7 +6,6 @@ namespace ParkPal.ScheduleSystem
 {
     class ScheduleSystem
     {
-        private List<Agency> agencies;
-        private List<Stop> stops;
+     
     }
 }

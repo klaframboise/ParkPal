@@ -20,7 +20,6 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\GTFSDownloadHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\IScheduleSystemController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\ScheduleSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\ScheduleSystemBuilder.cs" />
   </ItemGroup>
