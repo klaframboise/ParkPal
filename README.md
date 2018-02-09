@@ -19,7 +19,8 @@ Version 0.0
 ---------------------------------------------------	
 Description	
 ==================================================	
-**TODO**	
+Our project is to create a park and ride focused commute planner using the Google Maps API and open datasets from the RTM and STM. The main goal is to allow for a user to use one application to track everything and commute safely and quickly, without switching between 4-5 apps. In addition, the application will take advantage of the Uber API and the user’s current location in order to allow users to call for a ride in the event that they cannot make it back to their car via transit. The application is developed for Android, iOS and web.
+
 	
 --------------------------------------------------	
 Stories For Sprint	
@@ -34,4 +35,6 @@ Stories For Sprint
 --------------------------------------------------	
 Set Up	
 ==================================================	
-**TODO**
+**Web:** view the readme inside the ParkPalWeb subfolders for information on setting up and viewing the website
+
+**Mobile:**
