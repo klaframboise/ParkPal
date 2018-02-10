@@ -3,29 +3,33 @@ using System.Net;
 using Xamarin.Forms;
 using System.Reflection;
 using System.IO;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using ParkPal.EmbeddedResources;
 
 namespace ParkPal.ScheduleSystem
 {
     public class GTFSDownloadHelper
     {
-        public List<string> GetUrls()
+
+        public string[] GetUrls()
         {
-            List<string> urls = new List<string>();
+            string[] urls;
 
             /* Get urls from embedded list */
             var assembly = typeof(GTFSDownloadHelper).GetTypeInfo().Assembly;
-            Stream stream = assembly.GetManifestResourceStream("ParkPal.SharedResources.GTFSFeedLinks.txt");
+            Stream stream = ResourceLoader.GetEmbeddedResourceStream(assembly, "GTFSFeedLinks.txt");
             using (var reader = new System.IO.StreamReader(stream))
             {
-                urls.Add(reader.ReadLine());
+                var urlsBlock = reader.ReadToEnd();
+                var urlsBlockNoCarriageReturn = urlsBlock.Replace("\r", "");
+                urls = urlsBlockNoCarriageReturn.Split('\n');
+                
             }
 
             return urls;
         }
 
-        public async void DownloadFeeds(List<string> urls)
+        public async void DownloadFeeds(string[] urls)
         {
             foreach(var url in urls)
             {
