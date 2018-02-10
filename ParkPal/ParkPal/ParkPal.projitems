@@ -16,7 +16,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)EmbeddedResources\ResourceLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -25,6 +24,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ScheduleSystem\ScheduleSystemBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)EmbeddedResources\GTFSFeedLinks.txt" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)SharedResources\GTFSFeedLinks.txt" />
   </ItemGroup>
 </Project>
