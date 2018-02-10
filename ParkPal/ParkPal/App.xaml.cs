@@ -12,7 +12,6 @@ namespace ParkPal
 		public App ()
 		{
 			InitializeComponent();
-
 			MainPage mainPage = new ParkPal.MainPage();
 		}
 
