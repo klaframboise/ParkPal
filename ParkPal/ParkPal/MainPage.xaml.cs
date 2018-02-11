@@ -13,7 +13,7 @@ namespace ParkPal
 		public MainPage()
 		{
 			InitializeComponent();
-            //DownloadFeeds();
+            DownloadFeeds();
 		}
 
         void DownloadFeeds()
