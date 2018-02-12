@@ -1,7 +1,8 @@
 <nav>
   <div class="topnav">
-    <input type="text" placeholder="Your Location" id="from">
-    <input type="text" placeholder="Choose Destination" id="to">
+    <input type="text" placeholder="Your Location" id="from" #originInput>
+    <input type="text" placeholder="Choose Destination" id="to"#destinationInput>
+    <button (click)="newMessage(originInput.value,destinationInput.value)" class="button">Find Path</button>
   </div>
   <div class="logonav">
     <button id="busButton"><img src="../assets/bus.png" id="busImage" alt="Bus Logo" width="20px" height="20px"></button>
