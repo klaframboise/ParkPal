@@ -55,11 +55,13 @@ export class MapComponent implements OnInit {
       mapTypeId: google.maps.MapTypeId.ROADMAP
   };
     let map = new google.maps.Map(document.getElementById("googleMap"));
+    let directionsPanel = document.getElementById('bottomnav');
 
     let directionsDisplay = new google.maps.DirectionsRenderer();
     let directionsService = new google.maps.DirectionsService();
 
     directionsDisplay.setMap(map);
+    directionsDisplay.setPanel(directionsPanel);
 
     let start = this.origin;
     let end = this.destination;
@@ -75,7 +77,6 @@ export class MapComponent implements OnInit {
         console.log("no");
       }
     })
-      //this.data.changeNumber(0)
 
   }
 
@@ -96,9 +97,5 @@ export class MapComponent implements OnInit {
     this.data.currentOrigin.subscribe(origin => this.origin=origin)   
     this.data.currentDestination.subscribe(destination => this.destination=destination) 
     this.data.currentNumber.subscribe(directionTrue => this.directionTrue=directionTrue)
-
-
-   // this.findDirection();
-
   }
 }
