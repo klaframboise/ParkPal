@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { DataService } from '../data.service';
+import { Input } from '@angular/core/src/metadata/directives';
 
 @Component({
   selector: 'app-nav-bar',
@@ -7,9 +9,29 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NavBarComponent implements OnInit {
 
-  constructor() { }
 
+
+  origin:string;
+  destination:string;
+  directionTrue: number;
+
+
+
+  constructor(private data: DataService) { }
+
+
+  
   ngOnInit() {
+    this.data.currentOrigin.subscribe(origin => this.origin=origin)
+    this.data.currentDestination.subscribe(destination => this.destination=destination)
+    this.data.currentNumber.subscribe(directionTrue => this.directionTrue = directionTrue)
   }
+
+  newMessage(origin:string,destination:string){
+    this.data.changeOrigin(origin)
+    this.data.changeDestination(destination)
+    this.data.changeNumber(1)
+  }
+
 
 }
