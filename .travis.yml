@@ -1,14 +1,14 @@
-matrix:
-    include:
-        
-        # safelist
-        branches:
-            only:
-                - master
-          
-        - language: node_js
-          before_script:
-            - npm install -g @angular/cli
-          script:
-            - ng build --prod
-            
+sudo: false
+language: node_js
+node_js:
+  - 'node'
+  - '6'
+  - '5'
+  - '4'
+before_script: 
+  - npm instal -g @angular/cl
+script: 
+  - ng build --prod
+branches:
+  only:
+    - master
