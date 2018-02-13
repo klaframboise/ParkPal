@@ -24,7 +24,7 @@ export class NavBarComponent implements OnInit {
   setType(transportationType:string,button:number){
     this.methodOfTransp = transportationType;
     var el = document.getElementsByClassName("transButton");
-    el[button]
+    el[button];
     console.log("Type being changed: "+this.methodOfTransp);
   }
   
