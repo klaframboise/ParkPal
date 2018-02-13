@@ -6,7 +6,7 @@ node_js:
   - '5'
   - '4'
 before_script: 
-  - npm instal -g @angular/cl
+  - npm install -g @angular/cl
 script: 
   - ng build --prod
 branches:
