@@ -35,7 +35,6 @@ export class MapComponent implements OnInit {
 
 
   check(directionTrue:number){
-  //  console.log("inside");
     if(this.directionTrue==1){
       console.log("Checking if true");
         this.findDirection();
@@ -55,7 +54,7 @@ export class MapComponent implements OnInit {
       mapTypeId: google.maps.MapTypeId.ROADMAP
   };
     let map = new google.maps.Map(document.getElementById("googleMap"));
-    let directionsPanel = document.getElementById('bottomnav');
+    let directionsPanel = document.getElementById("routeoptions");
 
     let directionsDisplay = new google.maps.DirectionsRenderer();
     let directionsService = new google.maps.DirectionsService();
