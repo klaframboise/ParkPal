@@ -9,10 +9,12 @@ export class DataService {
   private originSource = new BehaviorSubject<string>("");
   private destinationSource = new BehaviorSubject<string>("");
   private numberSource = new BehaviorSubject<number>(0)
+  private methodOfTransp = new BehaviorSubject<string>("DRIVING");
 
   currentOrigin = this.originSource.asObservable();
   currentDestination = this.destinationSource.asObservable();
   currentNumber = this.numberSource.asObservable();
+  currentTransport = this.methodOfTransp.asObservable();
 
   constructor() { }
 
@@ -26,5 +28,9 @@ export class DataService {
 
   changeNumber(directionTrue: number){
     this.numberSource.next(directionTrue)
+  }
+
+  changeMethodOfTransp(transport: string){
+    this.methodOfTransp.next(transport)
   }
 }
