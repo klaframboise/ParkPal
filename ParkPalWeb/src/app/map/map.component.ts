@@ -38,6 +38,8 @@ export class MapComponent implements OnInit {
       mapTypeId: google.maps.MapTypeId.ROADMAP
   };
     let map = new google.maps.Map(document.getElementById("googleMap"));
+    document.getElementById("routeoptions");
+    document.getElementById("routeoptions").innerHTML = "";
     let directionsPanel = document.getElementById("routeoptions");
 
     let directionsDisplay = new google.maps.DirectionsRenderer();
