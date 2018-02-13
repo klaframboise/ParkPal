@@ -55,10 +55,26 @@ export class MapComponent implements OnInit {
     var request = {
       origin: start,
       destination: end,
-      travelMode: transport
+      travelMode: transport,
+      provideRouteAlternatives: true
     };
     directionsService.route(request, function(result, status){
       if (status == 'OK') {
+        // below, finding shortest distance for driving mode of transport
+        if(transport == 'DRIVING'){
+            var shortestDist = result.routes[0].legs[0].distance.value;
+            var shortestDistRoute = result.routes[0];
+            // below, for-each loop to compare distance of all suggested routes and find shortest one
+            result.routes.forEach(function (value){
+              if(value.legs[0].distance.value < shortestDist){
+                value.legs[0].distance.value = shortestDist;
+                shortestDistRoute = value;
+              }
+            });
+            // below, reset the routes array to only contain the shortest distance route
+            result.routes.length = 0;
+            result.routes.push(shortestDistRoute);
+        }
         directionsDisplay.setDirections(result);
       } else {
         console.log("no");
