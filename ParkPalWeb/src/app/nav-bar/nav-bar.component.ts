@@ -36,11 +36,11 @@ export class NavBarComponent implements OnInit {
   }
 
   newMessage(origin:string,destination:string){
-    this.data.changeOrigin(origin)
-    this.data.changeDestination(destination)
-    this.data.changeNumber(1)
-    this.data.changeMethodOfTransp(this.methodOfTransp)
+    if(origin && destination){
+      this.data.changeOrigin(origin)
+      this.data.changeDestination(destination)
+      this.data.changeNumber(1)
+      this.data.changeMethodOfTransp(this.methodOfTransp)
+    }
   }
-
-
 }
