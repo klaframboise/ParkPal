@@ -24,7 +24,7 @@ export class MapComponent implements OnInit {
         this.findDirection();
      }
      this.data.changeNumber(0);
-
+     
   }
 
  
