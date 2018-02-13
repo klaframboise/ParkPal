@@ -2,6 +2,7 @@
   <div class="topnav" >
     <input type="text" placeholder="Your Location" id="from" #originInput>
     <input type="text" placeholder="Choose Destination" id="to"#destinationInput>
+    <button (click)="newMessage(originInput.value,destinationInput.value)"></button>
   </div>
   <div class="logonav">
     <button class="transButton" (click)="setType('TRANSIT',0)"><img src="../assets/bus.png" class="transImg" alt="Bus Logo" width="20px" height="20px"></button>
