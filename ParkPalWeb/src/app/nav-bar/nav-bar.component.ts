@@ -4,6 +4,7 @@ import { DataService } from '../data.service';
 import { Input } from '@angular/core/src/metadata/directives';
 
 
+
 @Component({
   selector: 'app-nav-bar',
   templateUrl: './nav-bar.component.html',

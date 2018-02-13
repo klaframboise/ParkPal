@@ -7,6 +7,8 @@ import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { MapComponent } from './map/map.component';
 import { SideMenuComponent } from './side-menu/side-menu.component';
 
+import { UiSwitchModule } from 'angular2-ui-switch'
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -15,7 +17,8 @@ import { SideMenuComponent } from './side-menu/side-menu.component';
     SideMenuComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    UiSwitchModule
   ],
   providers: [],
   bootstrap: [AppComponent]
