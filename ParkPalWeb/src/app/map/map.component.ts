@@ -16,23 +16,7 @@ export class MapComponent implements OnInit {
   origin:string;
   destination:string;
   directionTrue:number;
-
-  
-//  check(directionTrue){
-// if(directionTrue=1){
-
-     //this.findDirection()
- //    console.log("Fuck")
-     // this.directionTrue =0;
-    // setTimeout(()=>{    //<<<---    using ()=> syntax
-     // this.data.changeNumber(0);
- //},1000);
- // }
-  //this.data.changeNumber(0)
-
- // }
- 
-
+  methodOfTransp:string;
 
   check(directionTrue:number){
     if(this.directionTrue==1){
@@ -49,7 +33,7 @@ export class MapComponent implements OnInit {
 
 
   findDirection(){
-    console.log("Finding Route to: "+this.origin)
+    console.log("Finding Route to: "+this.origin+this.methodOfTransp)
     let mapProp = {
       mapTypeId: google.maps.MapTypeId.ROADMAP
   };
@@ -64,10 +48,12 @@ export class MapComponent implements OnInit {
 
     let start = this.origin;
     let end = this.destination;
+    let transport = this.methodOfTransp
+
     var request = {
       origin: start,
       destination: end,
-      travelMode: 'DRIVING'
+      travelMode: transport
     };
     directionsService.route(request, function(result, status){
       if (status == 'OK') {
@@ -76,15 +62,11 @@ export class MapComponent implements OnInit {
         console.log("no");
       }
     })
-
   }
 
 
 
   ngOnInit() {
-
-
-
 
     let mapProp = {
         center: new google.maps.LatLng(45.504386, -73.576659),
@@ -96,5 +78,6 @@ export class MapComponent implements OnInit {
     this.data.currentOrigin.subscribe(origin => this.origin=origin)   
     this.data.currentDestination.subscribe(destination => this.destination=destination) 
     this.data.currentNumber.subscribe(directionTrue => this.directionTrue=directionTrue)
+    this.data.currentTransport.subscribe(transport => this.methodOfTransp=transport)
   }
 }

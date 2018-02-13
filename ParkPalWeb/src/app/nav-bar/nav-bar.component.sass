@@ -21,16 +21,17 @@ nav
 .logonav
     padding-top: 20px
 
-button
+.transButton
     border-radius: 50%
     background-color: $red
     border: none
 
-button:focus
+.transButton:focus
     outline: none
     background-color: #890000
+    opacity: 1
 
-img
+.transImg
     padding: 5px
 
 input::-webkit-input-placeholder  /* Chrome/Opera/Safari */
@@ -57,3 +58,19 @@ input:-moz-placeholder  /* Firefox 18- */
 
 #to
     margin-top: 5px
+
+.switchnav
+    margin: 20px
+    display: flex
+    flex-direction: row
+    justify-content: center
+    align-items: center
+    ui-switch
+        margin: 0 10px
+    .option-text-wrapper
+        display: flex
+        flex-direction: column
+        .option-text
+            color: white
+            font-size: 14px
+            font-weight: 600
