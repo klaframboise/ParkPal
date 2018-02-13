@@ -1,14 +1,13 @@
-<nav>
-  <div class="topnav">
+<nav (keyup.enter)="newMessage(originInput.value,destinationInput.value)">
+  <div class="topnav" >
     <input type="text" placeholder="Your Location" id="from" #originInput>
     <input type="text" placeholder="Choose Destination" id="to"#destinationInput>
-    <button (click)="newMessage(originInput.value,destinationInput.value)" class="button">Find Path</button>
   </div>
   <div class="logonav">
-    <button id="busButton"><img src="../assets/bus.png" id="busImage" alt="Bus Logo" width="20px" height="20px"></button>
-    <button id="carButton"><img src="../assets/car.png" id="carImage" alt="Car logo" width="20px" height="20px"></button>
-    <button id="walkButton"><img src="../assets/walk.png" id="walkImage" alt="Walk logo" width="15px" height="20px"></button>
-    <button id="prButton"><img src="../assets/p&r.svg" id="prImage" alt="P&R logo" width="20px" height="20px"></button>
+    <button class="transButton" (click)="setType('TRANSIT',0)"><img src="../assets/bus.png" class="transImg" alt="Bus Logo" width="20px" height="20px"></button>
+    <button class="transButton" (click)="setType('DRIVING',1)"><img src="../assets/car.png" class="transImg" alt="Car logo" width="20px" height="20px"></button>
+    <button class="transButton" (click)="setType('WALKING',2)"><img src="../assets/walk.png" class="transImg" alt="Walk logo" width="15px" height="20px"></button>
+    <button class="transButton"><img src="../assets/p&r.svg" class="transImg" alt="P&R logo" width="20px" height="20px"></button>
   </div>
   <div class="switchnav">
     <div class="option-text-wrapper">
