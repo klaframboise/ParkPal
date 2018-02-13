@@ -26,7 +26,7 @@ export class MapComponent implements OnInit {
         this.findDirection();
      }
      this.data.changeNumber(0);
-
+     
   }
 
  
@@ -39,6 +39,9 @@ export class MapComponent implements OnInit {
     let mapProp = {
       mapTypeId: google.maps.MapTypeId.ROADMAP
   };
+    document.getElementById("routeoptions");
+    document.getElementById("routeoptions").innerHTML = "";
+    
     let directionsPanel = document.getElementById("routeoptions");
 
     let directionsDisplay = new google.maps.DirectionsRenderer();

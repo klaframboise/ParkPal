@@ -25,9 +25,9 @@ Our project is to create a park and ride focused commute planner using the Googl
 --------------------------------------------------	
 Stories For Sprint	
 ==================================================	
-- [ ] Story 1 Web
+- [x] Story 1 Web
 - [ ] Story 1 Mobile
-- [ ] Story 2 Web
+- [x] Story 2 Web
 - [ ] Story 2 Mobile
 - [ ] Story 5 Web 
 - [ ] Story 5 Mobile
