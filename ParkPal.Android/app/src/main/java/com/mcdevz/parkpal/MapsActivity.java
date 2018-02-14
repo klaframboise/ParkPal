@@ -1,4 +1,4 @@
-package com.parkpal;
+package com.mcdevz.parkpal;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;

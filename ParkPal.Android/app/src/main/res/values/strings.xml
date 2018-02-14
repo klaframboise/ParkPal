@@ -1,4 +1,14 @@
 <resources>
+    <string name="google_maps_key">AIzaSyBPrQwf_NvAibI1MCgIR6fQiPMRYkWIM3U</string>
     <string name="app_name">ParkPal</string>
     <string name="title_activity_maps">Map</string>
+    <string name="origin_hint">Current location</string>
+    <string name="destination_hint">Destination</string>
+    <string name="drive">Drive</string>
+    <string name="walk">Walk</string>
+    <string name="transit">Transit</string>
+    <string name="uber">Uber</string>
+    <string name="shortest_path">Shortest Path</string>
+    <string name="fastest_path">Fastest Path</string>
+    <string name="go">Go</string>
 </resources>
