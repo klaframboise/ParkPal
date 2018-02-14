@@ -31,27 +31,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/driving"
-            android:textColor="@color/colorTextPrimary"
-            android:onClick="onRadioButtonClicked"/>
+            android:onClick="onRadioButtonClicked"
+            android:text="driving"
+            android:textColor="@color/colorTextPrimary" />
 
         <RadioButton
             android:id="@+id/radioWalk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/walking"
-            android:textColor="@color/colorTextPrimary"
-            android:onClick="onRadioButtonClicked"/>
+            android:onClick="onRadioButtonClicked"
+            android:text="walking"
+            android:textColor="@color/colorTextPrimary" />
 
         <RadioButton
             android:id="@+id/radioTransit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/transit"
-            android:textColor="@color/colorTextPrimary"
-            android:onClick="onRadioButtonClicked"/>
+            android:onClick="onRadioButtonClicked"
+            android:text="transit"
+            android:textColor="@color/colorTextPrimary" />
 
         <RadioButton
             android:id="@+id/radioUber"

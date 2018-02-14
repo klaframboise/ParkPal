@@ -38,10 +38,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private Button btnGo;
-   // private RadioGroup transGroup;
-   // private RadioButton btnTrans;
+    private RadioGroup transGroup;
+    private RadioButton btnTrans;
     private String transportation;
-    private View view;
+   // private View view;
     private EditText etOrigin;
     private EditText etDestination;
     private List<Marker> originMarkers = new ArrayList<>();
@@ -61,12 +61,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnGo = (Button) findViewById(R.id.btnGo);
         etOrigin = (EditText) findViewById(R.id.etOrigin);
         etDestination = (EditText) findViewById(R.id.etDestination);
-       // transGroup = (RadioGroup) findViewById(R.id.transGroup);
-       // btnTrans = (RadioButton) findViewById(transGroup.getCheckedRadioButtonId());
+        transGroup = (RadioGroup) findViewById(R.id.transGroup);
+        btnTrans = (RadioButton) findViewById(transGroup.getCheckedRadioButtonId());
+        transportation = btnTrans.getText().toString();
+
+
+
+
+
+        btnGo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              // onRadioButtonClicked(v);
+                sendRequest();
+
+
+            }
+        });
+    }
+
+
+    public void onRadioButtonClicked(View view){
+
         boolean checked = ((RadioButton)view).isChecked();
+       // transGroup = findViewById(R.id.transGroup);
+      //  btnTrans = (RadioButton) findViewById(transGroup.getCheckedRadioButtonId());
 
         switch(view.getId()){
-
 
             case R.id.radioDrive:
                 if (checked)
@@ -82,39 +103,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 break;
 
         }
-
-
-
-        btnGo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendRequest();
-            }
-        });
     }
-
-
-//    private void onRadioButtonClicked(View view){
-//
-//        boolean checked = ((RadioButton)view).isChecked();
-//
-//        switch(view.getId()){
-//
-//            case R.id.radioDrive:
-//                if (checked)
-//                    transportation = "driving";
-//                break;
-//            case R.id.radioTransit:
-//                if (checked)
-//                    transportation = " transit";
-//                break;
-//            case R.id.radioWalk:
-//                if(checked)
-//                    transportation = "walking";
-//                break;
-//
-//        }
-//    }
 
 
     // Send the destination request to DirectionFinder
