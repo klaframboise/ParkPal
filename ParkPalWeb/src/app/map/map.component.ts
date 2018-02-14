@@ -18,13 +18,15 @@ export class MapComponent implements OnInit {
   directionTrue:number;
   methodOfTransp:string;
 
+  map:any;
+
   check(directionTrue:number){
     if(this.directionTrue==1){
       console.log("Checking if true");
         this.findDirection();
      }
      this.data.changeNumber(0);
-
+     
   }
 
  
@@ -37,12 +39,16 @@ export class MapComponent implements OnInit {
     let mapProp = {
       mapTypeId: google.maps.MapTypeId.ROADMAP
   };
-    let map = new google.maps.Map(document.getElementById("googleMap"));
+    document.getElementById("routeoptions");
+    document.getElementById("routeoptions").innerHTML = "";
+    
+    let directionsPanel = document.getElementById("routeoptions");
 
     let directionsDisplay = new google.maps.DirectionsRenderer();
     let directionsService = new google.maps.DirectionsService();
 
-    directionsDisplay.setMap(map);
+    directionsDisplay.setMap(this.map);
+    directionsDisplay.setPanel(directionsPanel);
 
     let start = this.origin;
     let end = this.destination;
@@ -72,7 +78,7 @@ export class MapComponent implements OnInit {
         mapTypeId: google.maps.MapTypeId.ROADMAP
     };
 
-    let map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+    this.map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
     this.data.currentOrigin.subscribe(origin => this.origin=origin)   
     this.data.currentDestination.subscribe(destination => this.destination=destination) 
     this.data.currentNumber.subscribe(directionTrue => this.directionTrue=directionTrue)
