@@ -11,13 +11,13 @@
         android:id="@+id/etOrigin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Current location" />
+        android:hint="@string/origin_hint" />
 
     <EditText
         android:id="@+id/etDestination"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Destination" />
+        android:hint="@string/destination_hint" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,28 +29,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Drive" />
+            android:text="@string/drive" />
 
         <RadioButton
             android:id="@+id/radioWalk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Walk" />
+            android:text="@string/walk" />
 
         <RadioButton
             android:id="@+id/radioTransit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Transit" />
+            android:text="@string/transit" />
 
         <RadioButton
             android:id="@+id/radioUber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Uber" />
+            android:text="@string/uber" />
     </LinearLayout>
 
     <LinearLayout
@@ -63,14 +63,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Shortest Path" />
+            android:text="@string/shortest_path" />
 
         <RadioButton
             android:id="@+id/radioFastestPath"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Fastest Path" />
+            android:text="@string/fastest_path" />
     </LinearLayout>
 
     <LinearLayout
@@ -83,7 +83,7 @@
             android:id="@+id/btnFindPath"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Go" />
+            android:text="@string/go" />
 
         <ImageView
             android:layout_marginLeft="20dp"
