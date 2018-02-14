@@ -65,17 +65,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnTrans = (RadioButton) findViewById(transGroup.getCheckedRadioButtonId());
         transportation = btnTrans.getText().toString();
 
-
-
-
-
         btnGo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
               // onRadioButtonClicked(v);
                 sendRequest();
-
-
             }
         });
     }
@@ -95,7 +89,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 break;
             case R.id.radioTransit:
                 if (checked)
-                    transportation = " transit";
+                    transportation = "transit";
                 break;
             case R.id.radioWalk:
                 if(checked)
