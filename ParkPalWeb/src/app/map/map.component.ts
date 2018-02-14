@@ -38,11 +38,13 @@ export class MapComponent implements OnInit {
       mapTypeId: google.maps.MapTypeId.ROADMAP
   };
     let map = new google.maps.Map(document.getElementById("googleMap"));
+    let directionsPanel = document.getElementById("routeoptions");
 
     let directionsDisplay = new google.maps.DirectionsRenderer();
     let directionsService = new google.maps.DirectionsService();
 
     directionsDisplay.setMap(map);
+    directionsDisplay.setPanel(directionsPanel);
 
     let start = this.origin;
     let end = this.destination;
