@@ -1,6 +1,5 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.mcdevz.parkpal.MapsActivity"
     android:layout_width="match_parent"
@@ -19,10 +18,11 @@
         android:layout_height="wrap_content"
         android:hint="@string/destination_hint" />
 
-    <LinearLayout
+    <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:checkedButton="@id/radioDrive">
 
         <RadioButton
             android:id="@+id/radioDrive"
@@ -51,12 +51,21 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/uber" />
-    </LinearLayout>
 
-    <LinearLayout
+    </RadioGroup>
+
+    <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:checkedButton="@id/radioFastestPath">
+
+        <RadioButton
+            android:id="@+id/radioFastestPath"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/fastest_path" />
 
         <RadioButton
             android:id="@+id/radioShortestPath"
@@ -65,13 +74,7 @@
             android:layout_weight="1"
             android:text="@string/shortest_path" />
 
-        <RadioButton
-            android:id="@+id/radioFastestPath"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/fastest_path" />
-    </LinearLayout>
+    </RadioGroup>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -118,6 +121,6 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="351dp" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>
