@@ -83,7 +83,7 @@
         >
 
         <Button
-            android:id="@+id/btnFindPath"
+            android:id="@+id/btnGo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/go" />
