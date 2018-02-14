@@ -5,8 +5,8 @@
     <string name="title_activity_maps">Map</string>
     <string name="origin_hint">Current location</string>
     <string name="destination_hint">Destination</string>
-    <string name="drive">Drive</string>
-    <string name="walk">Walk</string>
+    <string name="driving">Driving</string>
+    <string name="walking">Walking</string>
     <string name="transit">Transit</string>
     <string name="uber">Uber</string>
     <string name="shortest_path">Shortest Path</string>

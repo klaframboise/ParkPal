@@ -1,5 +1,6 @@
 package com.mcdevz.parkpal;
 
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.Manifest;
@@ -12,6 +13,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,6 +38,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private Button btnGo;
+    private RadioGroup transGroup;
+    private RadioButton btnTrans;
+    private String transportation;
+   // private View view;
     private EditText etOrigin;
     private EditText etDestination;
     private List<Marker> originMarkers = new ArrayList<>();
@@ -54,13 +61,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnGo = (Button) findViewById(R.id.btnGo);
         etOrigin = (EditText) findViewById(R.id.etOrigin);
         etDestination = (EditText) findViewById(R.id.etDestination);
+        transGroup = (RadioGroup) findViewById(R.id.transGroup);
+        btnTrans = (RadioButton) findViewById(transGroup.getCheckedRadioButtonId());
+        transportation = btnTrans.getText().toString();
+
+
+
+
 
         btnGo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+              // onRadioButtonClicked(v);
                 sendRequest();
+
+
             }
         });
+    }
+
+
+    public void onRadioButtonClicked(View view){
+
+        boolean checked = ((RadioButton)view).isChecked();
+       // transGroup = findViewById(R.id.transGroup);
+      //  btnTrans = (RadioButton) findViewById(transGroup.getCheckedRadioButtonId());
+
+        switch(view.getId()){
+
+            case R.id.radioDrive:
+                if (checked)
+                    transportation = "driving";
+                break;
+            case R.id.radioTransit:
+                if (checked)
+                    transportation = " transit";
+                break;
+            case R.id.radioWalk:
+                if(checked)
+                    transportation = "walking";
+                break;
+
+        }
     }
 
 
@@ -68,6 +110,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void sendRequest() {
         String origin = etOrigin.getText().toString();
         String destination = etDestination.getText().toString();
+
+       // String transportation = btnTrans.getText().toString();
+
+       // System.out.println(transportation);
 
         // If origin text box is left blank
         if (origin.isEmpty()) {
@@ -82,7 +128,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         try {
-            new DirectionFinder(this, origin, destination).execute();
+            new DirectionFinder(this, origin, destination, transportation).execute();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
