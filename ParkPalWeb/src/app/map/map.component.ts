@@ -20,6 +20,8 @@ export class MapComponent implements OnInit {
   routePreference: string;
 
   map:any;
+  directionsService: google.maps.DirectionsService;
+  directionsDisplay: google.maps.DirectionsRenderer;
 
   check(directionTrue:number){
     if(this.directionTrue==1){
@@ -35,6 +37,28 @@ export class MapComponent implements OnInit {
 
 
 
+  
+
+
+  ngOnInit() {
+
+    let mapProp = {
+        center: new google.maps.LatLng(45.504386, -73.576659),
+        zoom: 11,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    this.directionsDisplay = new google.maps.DirectionsRenderer;
+    this.directionsService = new google.maps.DirectionsService;
+    this.map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+    this.directionsDisplay.setMap(this.map);
+
+    this.data.currentOrigin.subscribe(origin => this.origin=origin)   
+    this.data.currentDestination.subscribe(destination => this.destination=destination) 
+    this.data.currentNumber.subscribe(directionTrue => this.directionTrue=directionTrue)
+    this.data.currentTransport.subscribe(transport => this.methodOfTransp = transport)
+    this.data.currentRoutePref.subscribe(routePref => this.routePreference = routePref)
+  }
+
   findDirection(){
     console.log("Finding Route to: "+this.origin+this.methodOfTransp)
     let mapProp = {
@@ -45,11 +69,10 @@ export class MapComponent implements OnInit {
 
     let directionsPanel = document.getElementById("routeoptions");
 
-    let directionsDisplay = new google.maps.DirectionsRenderer();
-    let directionsService = new google.maps.DirectionsService();
+    
 
-    directionsDisplay.setMap(this.map);
-    directionsDisplay.setPanel(directionsPanel);
+    
+    this.directionsDisplay.setPanel(directionsPanel);
 
     let start = this.origin;
     let end = this.destination;
@@ -59,11 +82,11 @@ export class MapComponent implements OnInit {
     var request = {
       origin: start,
       destination: end,
-      travelMode: transport,
+      travelMode: google.maps.TravelMode[transport],
       provideRouteAlternatives: true
     };
-    directionsService.route(request, function(result, status){
-      if (status == 'OK') {
+    this.directionsService.route(request, (result, status) => {
+      if (status == google.maps.DirectionsStatus.OK) {
         // below, finding shortest distance for driving mode of transport
         if (transport == 'DRIVING' && preference == 'SHORTEST') {
             var shortestDist = result.routes[0].legs[0].distance.value;
@@ -84,35 +107,18 @@ export class MapComponent implements OnInit {
           result.routes.length = 0;
           result.routes.push(fastestRoute);
         }
-        directionsDisplay.setDirections(result);
-      } else if (status == 'ZERO_RESULTS') {
-        /** directionsDisplay.setDirections({routes:[]}); This doesnt work */
+        this.directionsDisplay.setDirections(result);
+      } else if (google.maps.DirectionsStatus == 'ZERO_RESULTS') {
+        // this.directionsDisplay.setDirections(null);
         console.log("impossible");
         document.getElementById("routeoptions").innerHTML = "Cannot get directions with the current mode of transportation"
       }
       else {
-        /** directionsDisplay.setDirections(null); This doesnt work either */
+        // this.directionsDisplay.setDirections(null);
         console.log("misspelled");
         document.getElementById("routeoptions").innerHTML = "Invalid Destination or Current Location"
       }
     })
   }
 
-
-
-  ngOnInit() {
-
-    let mapProp = {
-        center: new google.maps.LatLng(45.504386, -73.576659),
-        zoom: 11,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-
-    this.map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-    this.data.currentOrigin.subscribe(origin => this.origin=origin)   
-    this.data.currentDestination.subscribe(destination => this.destination=destination) 
-    this.data.currentNumber.subscribe(directionTrue => this.directionTrue=directionTrue)
-    this.data.currentTransport.subscribe(transport => this.methodOfTransp = transport)
-    this.data.currentRoutePref.subscribe(routePref => this.routePreference = routePref)
-  }
 }
