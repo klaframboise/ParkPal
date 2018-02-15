@@ -40,12 +40,15 @@ export class MapComponent implements OnInit {
     let mapProp = {
       mapTypeId: google.maps.MapTypeId.ROADMAP
   };
-    
+    document.getElementById("routeoptions");	
+    document.getElementById("routeoptions").innerHTML = "";
+
     let directionsPanel = document.getElementById("routeoptions");
 
     let directionsDisplay = new google.maps.DirectionsRenderer();
     let directionsService = new google.maps.DirectionsService();
 
+    directionsDisplay.setMap(this.map);
     directionsDisplay.setPanel(directionsPanel);
 
     let start = this.origin;
@@ -83,12 +86,12 @@ export class MapComponent implements OnInit {
         }
         directionsDisplay.setDirections(result);
       } else if (status == 'ZERO_RESULTS') {
-        directionsDisplay.setDirections({routes:[]}); /** This doesnt work */
+        /** directionsDisplay.setDirections({routes:[]}); This doesnt work */
         console.log("impossible");
         document.getElementById("routeoptions").innerHTML = "Cannot get directions with the current mode of transportation"
       }
       else {
-        directionsDisplay.setDirections(null); /** This doesnt work either */
+        /** directionsDisplay.setDirections(null); This doesnt work either */
         console.log("misspelled");
         document.getElementById("routeoptions").innerHTML = "Invalid Destination or Current Location"
       }
