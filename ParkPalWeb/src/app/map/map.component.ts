@@ -40,9 +40,9 @@ export class MapComponent implements OnInit {
     let mapProp = {
       mapTypeId: google.maps.MapTypeId.ROADMAP
   };
-    document.getElementById("routeoptions");
+    document.getElementById("routeoptions");	
     document.getElementById("routeoptions").innerHTML = "";
-    
+
     let directionsPanel = document.getElementById("routeoptions");
 
     let directionsDisplay = new google.maps.DirectionsRenderer();
@@ -85,8 +85,16 @@ export class MapComponent implements OnInit {
           result.routes.push(fastestRoute);
         }
         directionsDisplay.setDirections(result);
-      } else {
-        console.log("no");
+      } else if (status == 'ZERO_RESULTS') {
+        /** directionsDisplay.setDirections({routes:[]}); This doesnt work */
+        console.log("impossible");
+        document.getElementById("routeoptions").innerHTML = "Cannot get directions with the current mode of transportation"
+      }
+      else {
+        /** directionsDisplay.setDirections(null); This doesnt work either */
+        /** directionsDisplay.set('directions', null); */
+        console.log("misspelled");
+        document.getElementById("routeoptions").innerHTML = "Invalid Destination or Current Location"
       }
     })
   }

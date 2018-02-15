@@ -18,7 +18,7 @@ import java.util.List;
 
 public class DirectionFinder {
     private static final String DIRECTION_URL_API = "https://maps.googleapis.com/maps/api/directions/json?";
-    private static final String GOOGLE_API_KEY = "AIzaSyDnwLF2-WfK8cVZt9OoDYJ9Y8kspXhEHfI";
+    private static final String GOOGLE_API_KEY = "AIzaSyBPrQwf_NvAibI1MCgIR6fQiPMRYkWIM3U";
     private DirectionFinderListener listener;
     private String origin;
     private String destination;
@@ -42,7 +42,7 @@ public class DirectionFinder {
         String urlTransportation = URLEncoder.encode(transportation, "utf-8");
 
 
-        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination+ "&mode="+ urlTransportation + "&key=" + GOOGLE_API_KEY;
+        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination+ "&mode="+ urlTransportation + "&alternatives=true&key=" + GOOGLE_API_KEY;
     }
 
     private class DownloadRawData extends AsyncTask<String, Void, String> {
