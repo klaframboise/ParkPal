@@ -1,4 +1,4 @@
-package com.parkpal;
+package com.mcdevz.parkpal;
 
 import org.junit.Test;
 

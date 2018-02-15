@@ -1,4 +1,15 @@
 <resources>
+    <string name="google_maps_key">AIzaSyBPrQwf_NvAibI1MCgIR6fQiPMRYkWIM3U</string>
+    <string name="uber_client_id">y7FhpfuYnxFAJFHdIbKh1jUp5rjRsRXO</string>
     <string name="app_name">ParkPal</string>
     <string name="title_activity_maps">Map</string>
+    <string name="origin_hint">Current location</string>
+    <string name="destination_hint">Destination</string>
+    <string name="driving">Driving</string>
+    <string name="walking">Walking</string>
+    <string name="transit">Transit</string>
+    <string name="uber">Uber</string>
+    <string name="shortest_path">Shortest Path</string>
+    <string name="fastest_path">Fastest Path</string>
+    <string name="go">Go</string>
 </resources>
