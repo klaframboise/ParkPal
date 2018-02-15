@@ -16,7 +16,8 @@ export class MapComponent implements OnInit {
   origin:string;
   destination:string;
   directionTrue:number;
-  methodOfTransp:string;
+  methodOfTransp: string;
+  routePreference: string;
 
   map:any;
 
@@ -52,15 +53,37 @@ export class MapComponent implements OnInit {
 
     let start = this.origin;
     let end = this.destination;
-    let transport = this.methodOfTransp
+    let transport = this.methodOfTransp;
+    let preference = this.routePreference;
 
     var request = {
       origin: start,
       destination: end,
-      travelMode: transport
+      travelMode: transport,
+      provideRouteAlternatives: true
     };
     directionsService.route(request, function(result, status){
       if (status == 'OK') {
+        // below, finding shortest distance for driving mode of transport
+        if (transport == 'DRIVING' && preference == 'SHORTEST') {
+            var shortestDist = result.routes[0].legs[0].distance.value;
+            var shortestDistRoute = result.routes[0];
+            // below, for-each loop to compare distance of all suggested routes and find shortest one
+            result.routes.forEach(function (value){
+              if(value.legs[0].distance.value < shortestDist){
+                value.legs[0].distance.value = shortestDist;
+                shortestDistRoute = value;
+              }
+            });
+            // below, reset the routes array to only contain the shortest distance route
+            result.routes.length = 0;
+            result.routes.push(shortestDistRoute);
+        }
+        else { // below, manually ensures to display only fastest route b/c route alternatives param is on for request
+          var fastestRoute = result.routes[0];
+          result.routes.length = 0;
+          result.routes.push(fastestRoute);
+        }
         directionsDisplay.setDirections(result);
       } else if (status == 'ZERO_RESULTS') {
         directionsDisplay.setDirections({routes:[]}); /** This doesnt work */
@@ -89,6 +112,7 @@ export class MapComponent implements OnInit {
     this.data.currentOrigin.subscribe(origin => this.origin=origin)   
     this.data.currentDestination.subscribe(destination => this.destination=destination) 
     this.data.currentNumber.subscribe(directionTrue => this.directionTrue=directionTrue)
-    this.data.currentTransport.subscribe(transport => this.methodOfTransp=transport)
+    this.data.currentTransport.subscribe(transport => this.methodOfTransp = transport)
+    this.data.currentRoutePref.subscribe(routePref => this.routePreference = routePref)
   }
 }
