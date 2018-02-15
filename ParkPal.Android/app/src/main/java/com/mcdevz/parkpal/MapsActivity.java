@@ -213,6 +213,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
 
+        /* Check if routes were found */
+        if(routes.isEmpty()) {
+            Toast.makeText(this, "No routes were found between the entered origin and destination", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         for (Route route : routes) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
             ((TextView) findViewById(R.id.tvDuration)).setText(route.duration.text);
