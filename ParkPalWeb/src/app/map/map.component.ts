@@ -107,5 +107,12 @@ export class MapComponent implements OnInit {
     this.data.currentNumber.subscribe(directionTrue => this.directionTrue=directionTrue)
     this.data.currentTransport.subscribe(transport => this.methodOfTransp = transport)
     this.data.currentRoutePref.subscribe(routePref => this.routePreference = routePref)
+
+    var inputFrom = document.getElementById('from');
+    var inputTo = document.getElementById('to');
+    var autocompleteFrom = new google.maps.places.Autocomplete(inputFrom);
+    var autocompleteTo = new google.maps.places.Autocomplete(inputTo);
+    autocompleteFrom.bindTo('bounds', this.map);
+    autocompleteTo.bindTo('bounds', this.map);
   }
 }
