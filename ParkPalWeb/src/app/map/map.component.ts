@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 import { log } from 'util';
+import { } from '@types/googlemaps';
 
 declare const google: any;
 
