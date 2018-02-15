@@ -16,7 +16,10 @@ export class MapComponent implements OnInit {
   origin:string;
   destination:string;
   directionTrue:number;
-  methodOfTransp:string;
+  methodOfTransp: string;
+  routePreference: string;
+
+  map:any;
 
   check(directionTrue:number){
     if(this.directionTrue==1){
@@ -24,7 +27,7 @@ export class MapComponent implements OnInit {
         this.findDirection();
      }
      this.data.changeNumber(0);
-
+     
   }
 
  
@@ -37,29 +40,57 @@ export class MapComponent implements OnInit {
     let mapProp = {
       mapTypeId: google.maps.MapTypeId.ROADMAP
   };
-    let map = new google.maps.Map(document.getElementById("googleMap"));
+    
     let directionsPanel = document.getElementById("routeoptions");
 
     let directionsDisplay = new google.maps.DirectionsRenderer();
     let directionsService = new google.maps.DirectionsService();
 
-    directionsDisplay.setMap(map);
     directionsDisplay.setPanel(directionsPanel);
 
     let start = this.origin;
     let end = this.destination;
-    let transport = this.methodOfTransp
+    let transport = this.methodOfTransp;
+    let preference = this.routePreference;
 
     var request = {
       origin: start,
       destination: end,
-      travelMode: transport
+      travelMode: transport,
+      provideRouteAlternatives: true
     };
     directionsService.route(request, function(result, status){
       if (status == 'OK') {
+        // below, finding shortest distance for driving mode of transport
+        if (transport == 'DRIVING' && preference == 'SHORTEST') {
+            var shortestDist = result.routes[0].legs[0].distance.value;
+            var shortestDistRoute = result.routes[0];
+            // below, for-each loop to compare distance of all suggested routes and find shortest one
+            result.routes.forEach(function (value){
+              if(value.legs[0].distance.value < shortestDist){
+                value.legs[0].distance.value = shortestDist;
+                shortestDistRoute = value;
+              }
+            });
+            // below, reset the routes array to only contain the shortest distance route
+            result.routes.length = 0;
+            result.routes.push(shortestDistRoute);
+        }
+        else { // below, manually ensures to display only fastest route b/c route alternatives param is on for request
+          var fastestRoute = result.routes[0];
+          result.routes.length = 0;
+          result.routes.push(fastestRoute);
+        }
         directionsDisplay.setDirections(result);
-      } else {
-        console.log("no");
+      } else if (status == 'ZERO_RESULTS') {
+        directionsDisplay.setDirections({routes:[]}); /** This doesnt work */
+        console.log("impossible");
+        document.getElementById("routeoptions").innerHTML = "Cannot get directions with the current mode of transportation"
+      }
+      else {
+        directionsDisplay.setDirections(null); /** This doesnt work either */
+        console.log("misspelled");
+        document.getElementById("routeoptions").innerHTML = "Invalid Destination or Current Location"
       }
     })
   }
@@ -74,10 +105,11 @@ export class MapComponent implements OnInit {
         mapTypeId: google.maps.MapTypeId.ROADMAP
     };
 
-    let map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+    this.map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
     this.data.currentOrigin.subscribe(origin => this.origin=origin)   
     this.data.currentDestination.subscribe(destination => this.destination=destination) 
     this.data.currentNumber.subscribe(directionTrue => this.directionTrue=directionTrue)
-    this.data.currentTransport.subscribe(transport => this.methodOfTransp=transport)
+    this.data.currentTransport.subscribe(transport => this.methodOfTransp = transport)
+    this.data.currentRoutePref.subscribe(routePref => this.routePreference = routePref)
   }
 }
