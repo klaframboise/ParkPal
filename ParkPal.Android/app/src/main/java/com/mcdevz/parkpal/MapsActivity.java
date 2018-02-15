@@ -198,6 +198,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         originMarkers = new ArrayList<>();
         destinationMarkers = new ArrayList<>();
 
+
+
+
+
         /* Handle Uber requests */
         Log.d("parkpal", "transportation before Uber check: " + transportation);
         if(transportation.equals("uber")) {
@@ -243,5 +247,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             polylinePaths.add(mMap.addPolyline(polylineOptions));
         }
+
+        int duration = routes.get(0).duration.value;
+        int distance = routes.get(0).distance.value;
+        Route timeRoute = routes.get(0);
+        Route distRoute = routes.get(0);
+        for (Route route : routes){
+            System.out.println("Hi");
+
+            if(duration > route.duration.value) {
+                duration = route.duration.value;
+                timeRoute = route;
+            }
+
+            if(distance > route.distance.value) {
+                distance = route.distance.value;
+                distRoute = route;
+            }
+
+
+        }
+        System.out.println("Hello");
+        System.out.println(distance);
+        System.out.println(timeRoute);
+        System.out.println(duration);
+        System.out.println(distRoute);
     }
 }
+
+
+
