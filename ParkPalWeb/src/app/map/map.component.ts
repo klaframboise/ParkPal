@@ -63,12 +63,12 @@ export class MapComponent implements OnInit {
       if (status == 'OK') {
         directionsDisplay.setDirections(result);
       } else if (status == 'ZERO_RESULTS') {
-        directionsDisplay.setDirections({routes:[]});
+        directionsDisplay.setDirections({routes:[]}); /** This doesnt work */
         console.log("impossible");
         document.getElementById("routeoptions").innerHTML = "Cannot get directions with the current mode of transportation"
       }
       else {
-        directionsDisplay.setDirections(null);
+        directionsDisplay.setDirections(null); /** This doesnt work either */
         console.log("misspelled");
         document.getElementById("routeoptions").innerHTML = "Invalid Destination or Current Location"
       }
