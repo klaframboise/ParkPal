@@ -1,5 +1,6 @@
 package com.mcdevz.parkpal;
 
+import android.location.Location;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.graphics.Color;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +29,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.mcdevz.parkpal.uber.UberAPIController;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +72,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnGo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              // onRadioButtonClicked(v);
+                Log.d("parkpal", "transportation mode on Go click: " + transportation);
                 sendRequest();
             }
         });
@@ -95,10 +99,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if(checked)
                     transportation = "walking";
                 break;
-
+            case R.id.radioUber:
+                if(checked) {
+                    transportation = "uber";
+                }
+                break;
         }
     }
-
 
     // Send the destination request to DirectionFinder
     private void sendRequest() {
@@ -122,7 +129,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         try {
-            new DirectionFinder(this, origin, destination, transportation).execute();
+            if(transportation.equals("uber")) {
+                Log.d("parkpal", "Starting direction finder with driving");
+                new DirectionFinder(this, origin, destination, "driving").execute();
+            }
+            else {
+                new DirectionFinder(this, origin, destination, transportation).execute();
+            }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -184,6 +197,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         polylinePaths = new ArrayList<>();
         originMarkers = new ArrayList<>();
         destinationMarkers = new ArrayList<>();
+
+        /* Handle Uber requests */
+        Log.d("parkpal", "transportation before Uber check: " + transportation);
+        if(transportation.equals("uber")) {
+            Log.d("parkpal", "Entering Uber subroutine");
+            UberAPIController uber = new UberAPIController(getResources().getString(R.string.uber_client_id));
+            LatLng origin = new LatLng(routes.get(0).startLocation.latitude, routes.get(0).startLocation.longitude);
+            LatLng destination = new LatLng(routes.get(0).endLocation.latitude, routes.get(0).endLocation.longitude);
+            try {
+                uber.openUberApp(this, origin, destination);
+            } catch (RuntimeException e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
 
         for (Route route : routes) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));

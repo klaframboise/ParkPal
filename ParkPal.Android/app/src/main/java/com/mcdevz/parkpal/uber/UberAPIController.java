@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.location.Location;
 import android.net.Uri;
+import android.util.Log;
 
+
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
@@ -15,28 +17,29 @@ import java.util.List;
  */
 public class UberAPIController {
 
-    private String deepLink;
+    private final String DEEP_LINK;
 
     /**
      * Constructs a Uber API Controller with the given client id.
      * @param clientId
      */
     public UberAPIController(String clientId) {
-        deepLink = "uber://?client_id=" + clientId;
+        DEEP_LINK = "uber://?client_id=" + clientId;
+        Log.d("parkpal", "Controller constructed");
     }
 
     /**
      * Opens the uber app to offer a ride to the user from their current location to the set
      * destination. Throws an exception if the user's location is not available.
      * @param context context calling the method
-     * @param destination Location object representing the destination
+     * @param destination LatLng object representing the destination
      * @throws RuntimeException if uber could not be launched
      */
-    public void openUberApp(Context context, Location destination) throws RuntimeException {
+    public void openUberApp(Context context, LatLng destination) throws RuntimeException {
 
         // Build URI and intent
-        String deepLink = String.format("%saction=setPickup&pickup=my_location&dropoff[latitude]=%d&dropoff[longitude]=%d",
-                this.deepLink, destination.getLatitude(), destination.getLongitude());
+        String deepLink = String.format("%saction=setPickup&pickup=my_location&dropoff[latitude]=%f&dropoff[longitude]=%f",
+                this.DEEP_LINK, destination.latitude, destination.longitude);
         Uri uri = Uri.parse(deepLink);
         Intent openUberIntent = new Intent(Intent.ACTION_VIEW, uri);
 
@@ -53,18 +56,19 @@ public class UberAPIController {
      * Opens the uber app to offer a ride to the user from their current location to the set
      * destination. Throws an exception if the user's location is not available.
      * @param context context calling the method
-     * @param origin Location object representing the origin
-     * @param destination Location object representing the destination
+     * @param origin LatLng object representing the origin
+     * @param destination LatLng object representing the destination
      * @throws RuntimeException
      */
-    public void openUberApp(Context context, Location origin, Location destination) throws RuntimeException {
+    public void openUberApp(Context context, LatLng origin, LatLng destination) throws RuntimeException {
 
         // Build URI and intent
-        String deepLink = String.format("%saction=setPickup&pickup[latitude]=%d&pickup[longitude]=%d&dropoff[latitude]=%d&dropoff[longitude]=%d",
-                this.deepLink, origin.getLatitude(), origin.getLongitude(), destination.getLatitude(),
-                destination.getLongitude());
+        String deepLink = String.format("%s&action=setPickup&pickup[latitude]=%f&pickup[longitude]=%f&dropoff[latitude]=%f&dropoff[longitude]=%f",
+                this.DEEP_LINK, origin.latitude, origin.longitude, destination.latitude,
+                destination.longitude);
         Uri uri = Uri.parse(deepLink);
         Intent openUberIntent = new Intent(Intent.ACTION_VIEW, uri);
+        Log.d("parkpal", "Starting Uber with: " + deepLink);
 
         // try to launch uber
         try {
