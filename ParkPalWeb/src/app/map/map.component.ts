@@ -40,15 +40,12 @@ export class MapComponent implements OnInit {
     let mapProp = {
       mapTypeId: google.maps.MapTypeId.ROADMAP
   };
-    document.getElementById("routeoptions");
-    document.getElementById("routeoptions").innerHTML = "";
     
     let directionsPanel = document.getElementById("routeoptions");
 
     let directionsDisplay = new google.maps.DirectionsRenderer();
     let directionsService = new google.maps.DirectionsService();
 
-    directionsDisplay.setMap(this.map);
     directionsDisplay.setPanel(directionsPanel);
 
     let start = this.origin;
