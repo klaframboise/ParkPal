@@ -35,30 +35,6 @@ export class MapComponent implements OnInit {
  
   constructor(private data: DataService) { }
 
-
-
-  
-
-
-  ngOnInit() {
-
-    let mapProp = {
-        center: new google.maps.LatLng(45.504386, -73.576659),
-        zoom: 11,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-    this.directionsDisplay = new google.maps.DirectionsRenderer;
-    this.directionsService = new google.maps.DirectionsService;
-    this.map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-    this.directionsDisplay.setMap(this.map);
-
-    this.data.currentOrigin.subscribe(origin => this.origin=origin)   
-    this.data.currentDestination.subscribe(destination => this.destination=destination) 
-    this.data.currentNumber.subscribe(directionTrue => this.directionTrue=directionTrue)
-    this.data.currentTransport.subscribe(transport => this.methodOfTransp = transport)
-    this.data.currentRoutePref.subscribe(routePref => this.routePreference = routePref)
-  }
-
   findDirection(){
     console.log("Finding Route to: "+this.origin+this.methodOfTransp)
     let mapProp = {
@@ -114,11 +90,37 @@ export class MapComponent implements OnInit {
         document.getElementById("routeoptions").innerHTML = "Cannot get directions with the current mode of transportation"
       }
       else {
-        // this.directionsDisplay.setDirections(null);
         console.log("misspelled");
         document.getElementById("routeoptions").innerHTML = "Invalid Destination or Current Location"
       }
     })
   }
 
+
+  ngOnInit() {
+
+    let mapProp = {
+        center: new google.maps.LatLng(45.504386, -73.576659),
+        zoom: 11,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+
+    this.directionsDisplay = new google.maps.DirectionsRenderer;
+    this.directionsService = new google.maps.DirectionsService;
+    this.map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+    this.directionsDisplay.setMap(this.map);
+
+    this.data.currentOrigin.subscribe(origin => this.origin=origin)   
+    this.data.currentDestination.subscribe(destination => this.destination=destination) 
+    this.data.currentNumber.subscribe(directionTrue => this.directionTrue=directionTrue)
+    this.data.currentTransport.subscribe(transport => this.methodOfTransp = transport)
+    this.data.currentRoutePref.subscribe(routePref => this.routePreference = routePref)
+
+    var inputFrom = document.getElementById('from');
+    var inputTo = document.getElementById('to');
+    var autocompleteFrom = new google.maps.places.Autocomplete(inputFrom);
+    var autocompleteTo = new google.maps.places.Autocomplete(inputTo);
+    autocompleteFrom.bindTo('bounds', this.map);
+    autocompleteTo.bindTo('bounds', this.map);
+  }
 }
