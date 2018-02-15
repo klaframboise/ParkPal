@@ -92,6 +92,7 @@ export class MapComponent implements OnInit {
       }
       else {
         /** directionsDisplay.setDirections(null); This doesnt work either */
+        /** directionsDisplay.set('directions', null); */
         console.log("misspelled");
         document.getElementById("routeoptions").innerHTML = "Invalid Destination or Current Location"
       }
