@@ -45,12 +45,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private RadioGroup transGroup;
     private RadioButton btnTrans;
     private String transportation;
+    private List<Marker> originMarkers;
+    private List<Marker> destinationMarkers;
+    private List<Polyline> polylinePaths;
    // private View view;
     private EditText etOrigin;
     private EditText etDestination;
-    private List<Marker> originMarkers = new ArrayList<>();
-    private List<Marker> destinationMarkers = new ArrayList<>();
-    private List<Polyline> polylinePaths = new ArrayList<>();
     private ProgressDialog progressDialog;
 
     @Override
@@ -111,10 +111,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void sendRequest() {
         String origin = etOrigin.getText().toString();
         String destination = etDestination.getText().toString();
-
-       // String transportation = btnTrans.getText().toString();
-
-       // System.out.println(transportation);
 
         // If origin text box is left blank
         if (origin.isEmpty()) {
@@ -194,13 +190,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onDirectionFinderSuccess(List<Route> routes) {
         progressDialog.dismiss();
-        polylinePaths = new ArrayList<>();
-        originMarkers = new ArrayList<>();
-        destinationMarkers = new ArrayList<>();
-
-
-
-
 
         /* Handle Uber requests */
         Log.d("parkpal", "transportation before Uber check: " + transportation);
@@ -223,37 +212,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
 
-        for (Route route : routes) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
-            ((TextView) findViewById(R.id.tvDuration)).setText(route.duration.text);
-            ((TextView) findViewById(R.id.tvDistance)).setText(route.distance.text);
-
-            originMarkers.add(mMap.addMarker(new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
-                    .title(route.startAddress)
-                    .position(route.startLocation)));
-            destinationMarkers.add(mMap.addMarker(new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.end_green))
-                    .title(route.endAddress)
-                    .position(route.endLocation)));
-
-            PolylineOptions polylineOptions = new PolylineOptions().
-                    geodesic(true).
-                    color(Color.BLUE).
-                    width(10);
-
-            for (int i = 0; i < route.points.size(); i++)
-                polylineOptions.add(route.points.get(i));
-
-            polylinePaths.add(mMap.addPolyline(polylineOptions));
-        }
-
-        int duration = routes.get(0).duration.value;
-        int distance = routes.get(0).distance.value;
         Route timeRoute = routes.get(0);
         Route distRoute = routes.get(0);
+        int duration = timeRoute.duration.value;
+        int distance = distRoute.distance.value;
+        Log.d("parkpal", "Number of routes returned: " + routes.size());
         for (Route route : routes){
-            System.out.println("Hi");
 
             if(duration > route.duration.value) {
                 duration = route.duration.value;
@@ -265,13 +229,68 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 distRoute = route;
             }
 
-
         }
-        System.out.println("Hello");
-        System.out.println(distance);
-        System.out.println(timeRoute);
-        System.out.println(duration);
-        System.out.println(distRoute);
+
+        drawRoute(getSelectedRoute(timeRoute, distRoute));
+
+    }
+
+    /**
+     * Determines which route to draw depending on user's selection.
+     * @param timeRoute the fastest route
+     * @param distRoute the shortest route
+     * @return the route to be drawn
+     */
+    private Route getSelectedRoute(Route timeRoute, Route distRoute) {
+
+        /* If both routes are the same, return anyone */
+        if(timeRoute == distRoute) {
+            Log.d("parkpal", "shortest and fastest routes are the same");
+            return timeRoute;
+        }
+
+        /* Get the selected button */
+        RadioGroup routeSel = findViewById(R.id.routeSelGroup);
+        int selectedRoute = routeSel.getCheckedRadioButtonId();
+
+        /* Switch on selected */
+        switch(selectedRoute) {
+            case R.id.radioShortestPath: Log.d("parkpal", "shortest route selected"); return distRoute;
+            default: Log.d("parkpal", "fastest route selected"); return timeRoute;
+        }
+
+    }
+
+    /**
+     * Draws the given route on the map.
+     * @param route
+     */
+    private void drawRoute(Route route) {
+        polylinePaths = new ArrayList<>();
+        originMarkers = new ArrayList<>();
+        destinationMarkers = new ArrayList<>();
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
+        ((TextView) findViewById(R.id.tvDuration)).setText(route.duration.text);
+        ((TextView) findViewById(R.id.tvDistance)).setText(route.distance.text);
+
+        originMarkers.add(mMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
+                .title(route.startAddress)
+                .position(route.startLocation)));
+        destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.end_green))
+                .title(route.endAddress)
+                .position(route.endLocation)));
+
+        PolylineOptions polylineOptions = new PolylineOptions().
+                geodesic(true).
+                color(Color.BLUE).
+                width(10);
+
+        for (int i = 0; i < route.points.size(); i++)
+            polylineOptions.add(route.points.get(i));
+
+        polylinePaths.add(mMap.addPolyline(polylineOptions));
     }
 }
 
