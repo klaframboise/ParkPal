@@ -1,6 +1,9 @@
 package com.mcdevz.parkpal;
 
+import android.content.Intent;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -76,6 +79,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 sendRequest();
             }
         });
+
+        if(!isNetworkAvailable()) {
+            Toast.makeText(this, R.string.offline_msg, Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, ScheduleBrowser.class);
+            startActivity(intent);
+        }
+    }
+
+    /**
+     * Checks if network is available.
+     * @return true if connected through either wifi or lte
+     */
+    private boolean isNetworkAvailable() {
+
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getSystemService(this.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
     }
 
 
