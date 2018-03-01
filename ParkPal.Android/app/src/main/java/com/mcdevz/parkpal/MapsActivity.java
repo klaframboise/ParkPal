@@ -30,17 +30,26 @@ import java.util.List;
 import modules.DirectionFinder;
 import modules.DirectionFinderListener;
 import modules.Route;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.os.Build;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DirectionFinderListener {
 
     private GoogleMap mMap;
     private Button btnGo;
-    private EditText etOrigin;
+    //private EditText etOrigin;
     private EditText etDestination;
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
     private List<Polyline> polylinePaths = new ArrayList<>();
     private ProgressDialog progressDialog;
+    private AutoCompleteTextView etOrigin = (AutoCompleteTextView) findViewById(R.id.etOrigin);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +59,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
+        final String[] COUNTRIES = new String[] {
+                "Belgium", "France", "Italy", "Germany", "Spain"
+        };
         btnGo = (Button) findViewById(R.id.btnGo);
-        etOrigin = (EditText) findViewById(R.id.etOrigin);
+        //etOrigin = (EditText) findViewById(R.id.etOrigin);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, COUNTRIES);
+
+        etOrigin.setAdapter(adapter);
         etDestination = (EditText) findViewById(R.id.etDestination);
 
         btnGo.setOnClickListener(new View.OnClickListener() {

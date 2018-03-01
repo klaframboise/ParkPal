@@ -7,11 +7,17 @@
     android:background="@color/colorPrimary"
     android:orientation="vertical"  >
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/etOrigin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/origin_hint" />
+        android:ems="10"
+        android:hint="@string/origin_hint" >
+
+        <requestFocus />
+    </AutoCompleteTextView>
+
+
 
     <EditText
         android:id="@+id/etDestination"
