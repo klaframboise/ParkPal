@@ -1,0 +1,255 @@
+namespace com.mcdevz.parkpal.gtfs;
+class GTFSModel
+{
+  singleton;
+  1 -> * Agency;
+  1 -> * Transfer;
+  1 -> * FeedInfo;
+}
+class Agency
+{
+  * -> * Route;
+  * -> * FareAttribute;
+  lazy String id;
+  String name;
+  String url;
+  String timezone;
+  lazy String lang;
+  lazy String phone;
+  lazy fareUrl;
+  lazy String email;
+  
+  key {id}
+}
+
+class Route
+{
+  * -> * Trip;
+  * -> * FareRule;
+  lazy Agency agency;
+  String id;
+  String shortName;
+  String longName;
+  lazy String desc;
+  Integer type;
+  lazy String url;
+  lazy String color;
+  lazy String textColor;
+  lazy String sortOrder;
+  
+  key {agency, id}
+}
+
+class Trip
+{
+  * -> * StopTime;
+  * -> * Frequency;
+  Route route;
+  Calendar calendar;
+  * -> 0..1 Shape;
+  String id;
+  lazy String headsign;
+  lazy String shortName;
+  lazy Integer direction;
+  lazy String block;
+  defaulted Integer wheelchairAccessible = 0;
+  defaulted Integer bikesAllowed = 0;
+  
+  key {calendar, route, id}
+}
+
+class StopTime
+{
+  * -> 1 Trip;
+  * -> 1 Stop;
+  Time arrivalTime;
+  Time departureTime;
+  Integer sequence;
+  lazy String headsign;
+  defaulted Integer pickupType = 0;
+  defaulted Integer dropOffType = 0;
+  lazy Float shadeDistTraveled;
+  defaulted Integer timepoint = 2;
+}
+
+class Stop
+{
+  String id;
+  lazy String code;
+  String name;
+  lazy String desc;
+  Double lat;
+  Double lon;
+  lazy String zoneId;
+  lazy String url;
+  defaulted Integer locationType = 0;
+  lazy String parentStation;
+  lazy String timezone;
+  defaulted Integer wheelchairBoarding = 0;
+  
+  key {id}
+}
+
+class FareAttribute
+{
+  * -> * FareRule;
+  Agency agency;
+  String id;
+  Float price;
+  String currency;
+  Integer paymentMethod;
+  defaulted Integer transfers = 3;
+  lazy Integer transferDuration;
+  
+  key {agency, id}
+}
+
+class FareRule
+{
+  FareAttribute attribute;
+  * -> 0..1 Route;
+  lazy String originId;
+  lazy String destinationId;
+  lazy String containsId;
+}
+
+class Shape
+{
+  String id;
+  Double[] lat;
+  Double[] lon;
+  Integer[] sequence;
+  lazy Integer[] distTraveled;
+  
+  key {id}
+}
+
+class Calendar
+{
+  * -> 1 Agency;
+  String id;
+  Boolean monday;
+  Boolean tuesday;
+  Boolean wednesday;
+  Boolean thursday;
+  Boolean friday;
+  Boolean saturday;
+  Boolean sunday;
+  Date startDate;
+  Date endDate;
+}
+
+class CalendarDate
+{
+  * -> 1 Agency;
+  String id;
+  Date date;
+  Integer exceptionType;
+}
+
+class Frequency
+{
+  * -> 1 Trip;
+  Time startTime;
+  Time endTime;
+  Integer headwaySecs;
+  defaulted Boolean exactTimes = false;
+}
+
+class Transfer
+{
+  Stop from;
+  Stop to;
+  defaulted Integer type = 0;
+  lazy Integer minTransferTime;
+}
+
+class FeedInfo
+{
+  String publisherName;
+  String publisherUrl;
+  String lang;
+  lazy Date startDate;
+  lazy Date endDate;
+  lazy String version;
+}
+
+//$?[End_of_model]$?
+
+class Agency
+{
+  position 41 82 109 41;
+  position.association Agency__Route 53,41 52,0;
+}
+
+class Route
+{
+  position 43 171 109 41;
+  position.association Route__Trip 56,41 55,0;
+  position.association Agency__Route 52,0 53,28;
+}
+
+class Trip
+{
+  position 41 282 109 41;
+  position.association Route__Trip 56,0 55,28;
+  position.association StopTime__Trip 51,28 53,0;
+}
+
+class StopTime
+{
+  position 43 389 109 41;
+    position.association StopTime__Trip 50,0 54,41;
+  position.association Stop__StopTime 81,28 79,0;
+}
+
+class Stop
+{
+  position 51 483 109 41;
+  position.association Stop__StopTime 78,0 81,41;
+}
+
+class FareAttribute
+{
+  position 314 50 109 41;
+}
+
+class Shape
+{
+  position 311 214 109 41;
+}
+
+class Calendar
+{
+  position 310 310 109 41;
+}
+
+class CalendarDate
+{
+  position 307 401 109 41;
+}
+
+class Frequency
+{
+  position 311 496 109 41;
+}
+
+class Transfer
+{
+  position 311 586 109 41;
+}
+
+class FeedInfo
+{
+  position 313 675 109 41;
+}
+
+class GTFSModel
+{
+  position 50 30 109 45;
+}
+
+class FareRule
+{
+  position 250 230 109 45;
+}
