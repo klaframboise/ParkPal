@@ -1,29 +1,35 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.mcdevz.parkpal.MapsActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:orientation="vertical"  >
 
-    <AutoCompleteTextView
+    <cn.zhaiyifan.rememberedittext.RememberEditText
         android:id="@+id/etOrigin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="@string/origin_hint" >
-
-        <requestFocus />
-    </AutoCompleteTextView>
-
-
-
-    <EditText
+        android:hint="@string/origin_hint"
+        android:inputType="text"
+        app:autoFill="true"
+        app:autoSave="true"
+        app:rememberCount="5"
+        />
+    <cn.zhaiyifan.rememberedittext.RememberEditText
         android:id="@+id/etDestination"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/destination_hint" />
+        android:ems="10"
+        android:hint="@string/destination_hint"
+        android:inputType="text"
+        app:autoFill="true"
+        app:autoSave="true"
+        app:rememberCount="5"
+        />
 
     <RadioGroup
         android:layout_width="match_parent"

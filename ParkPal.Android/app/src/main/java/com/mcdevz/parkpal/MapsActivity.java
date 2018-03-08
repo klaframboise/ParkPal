@@ -1,5 +1,6 @@
 package com.mcdevz.parkpal;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.Manifest;
@@ -42,13 +43,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private Button btnGo;
-    //private EditText etOrigin;
+    private EditText etOrigin;
     private EditText etDestination;
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
     private List<Polyline> polylinePaths = new ArrayList<>();
     private ProgressDialog progressDialog;
-    private AutoCompleteTextView etOrigin = (AutoCompleteTextView) findViewById(R.id.etOrigin);
+
 
 
     @Override
@@ -59,20 +60,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        final String[] COUNTRIES = new String[] {
-                "Belgium", "France", "Italy", "Germany", "Spain"
-        };
         btnGo = (Button) findViewById(R.id.btnGo);
-        //etOrigin = (EditText) findViewById(R.id.etOrigin);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, COUNTRIES);
-
-        etOrigin.setAdapter(adapter);
+        etOrigin = (EditText) findViewById(R.id.etOrigin);
         etDestination = (EditText) findViewById(R.id.etDestination);
+        //if(getIntent().hasExtra("origin") && getIntent().hasExtra("dest")){
+        if(getIntent().getExtras() != null){
+            Bundle history = getIntent().getExtras();
+            etOrigin.setText(history.getCharSequence("origin"));
+            etDestination.setText(history.getCharSequence("dest"));
+            sendRequest();
+        }
+
+
 
         btnGo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendRequest();
+                Intent intent = new Intent(MapsActivity.this,MapsActivity.class);
+                intent.putExtra("origin", etOrigin.getText().toString());
+                intent.putExtra("dest", etDestination.getText().toString());
+                startActivity(intent);
+                finish();
+
             }
         });
     }
