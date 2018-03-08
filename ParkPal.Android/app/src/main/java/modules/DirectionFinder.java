@@ -102,7 +102,7 @@ public class DirectionFinder {
 
 
             /***/
-            JSONObject jsonStartLocationType = jsonLeg.getJSONObject("type");
+            JSONObject jsonStartLocationType = jsonLeg.getJSONObject("types");
             JSONObject jsonTravelMode = jsonLeg.getJSONObject("travel_mode");
             /***/
 
@@ -112,7 +112,7 @@ public class DirectionFinder {
             route.startAddress = jsonLeg.getString("start_address");
 
             /****/
-            route.startLocationType = jsonStartLocationType.getString("type");
+            route.startLocationTypes = getStringListFromJsonArray(jsonStartLocationType.getJSONArray("types"));
             route.travelMode = jsonTravelMode.getString("travel_mode");
             /***/
 
@@ -166,10 +166,21 @@ public class DirectionFinder {
     }
 
 
-    private boolean checkifBar(Route route) throws UnsupportedEncodingException {
-        if(route.travelMode.equals("Driving") && route.startLocationType.equals("bar")){
-            return true;
+    private boolean checkifBar(Route route, List<String> types) throws UnsupportedEncodingException {
+        for(String type: types) {
+            if (route.travelMode.equalsIgnoreCase("Driving") && type.equalsIgnoreCase("bar")) {
+                return true;
+            }
         }
-        else return false;
+        return false;
+    }
+
+    public static List<String> getStringListFromJsonArray(JSONArray jArray) throws JSONException {
+        List<String> returnList = new ArrayList<String>();
+        for (int i = 0; i < jArray.length(); i++) {
+            String val = jArray.getString(i);
+            returnList.add(val);
+        }
+        return returnList;
     }
 }
