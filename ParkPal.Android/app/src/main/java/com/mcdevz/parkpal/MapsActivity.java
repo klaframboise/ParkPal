@@ -226,7 +226,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 distance = route.distance.value;
                 distRoute = route;
             }
-            if(route.travelMode.equalsIgnoreCase("Driving") && route.startLocationType.equalsIgnoreCase("bar")){
+            if(route.startLocationTypes.contains("bar") && route.travelMode.equalsIgnoreCase("Driving")){
                 Toast.makeText(this, "Don't drink and drive Nigga!", Toast.LENGTH_SHORT).show();
                 System.out.println("dont drink and drive");
             }
