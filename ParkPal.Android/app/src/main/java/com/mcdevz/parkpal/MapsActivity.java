@@ -218,17 +218,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int distance = distRoute.distance.value;
         Log.d("parkpal", "Number of routes returned: " + routes.size());
         for (Route route : routes){
-
             if(duration > route.duration.value) {
                 duration = route.duration.value;
                 timeRoute = route;
             }
-
             if(distance > route.distance.value) {
                 distance = route.distance.value;
                 distRoute = route;
             }
-
+            if(route.travelMode.equalsIgnoreCase("Driving") && route.startLocationType.equalsIgnoreCase("bar")){
+                Toast.makeText(this, "Don't drink and drive Nigga!", Toast.LENGTH_SHORT).show();
+                System.out.println("dont drink and drive");
+            }
         }
 
         drawRoute(getSelectedRoute(timeRoute, distRoute));
@@ -291,6 +292,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             polylineOptions.add(route.points.get(i));
 
         polylinePaths.add(mMap.addPolyline(polylineOptions));
+    }
+
+    private void checkSafety(String addressA, String adressB){
+        if (transportation.equals("driving")){
+            System.out.println("Don't die");
+        }
     }
 }
 

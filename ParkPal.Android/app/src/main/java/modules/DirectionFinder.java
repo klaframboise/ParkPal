@@ -1,5 +1,6 @@
 package modules;
 
+import android.location.Location;
 import android.os.AsyncTask;
 import com.google.android.gms.maps.model.LatLng;
 import org.json.JSONArray;
@@ -40,7 +41,6 @@ public class DirectionFinder {
         String urlOrigin = URLEncoder.encode(origin, "utf-8");
         String urlDestination = URLEncoder.encode(destination, "utf-8");
         String urlTransportation = URLEncoder.encode(transportation, "utf-8");
-
 
         return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination+ "&mode="+ urlTransportation + "&alternatives=true&key=" + GOOGLE_API_KEY;
     }
@@ -100,16 +100,30 @@ public class DirectionFinder {
             JSONObject jsonEndLocation = jsonLeg.getJSONObject("end_location");
             JSONObject jsonStartLocation = jsonLeg.getJSONObject("start_location");
 
+
+            /***/
+            JSONObject jsonStartLocationType = jsonLeg.getJSONObject("type");
+            JSONObject jsonTravelMode = jsonLeg.getJSONObject("travel_mode");
+            /***/
+
             route.distance = new Distance(jsonDistance.getString("text"), jsonDistance.getInt("value"));
             route.duration = new Duration(jsonDuration.getString("text"), jsonDuration.getInt("value"));
             route.endAddress = jsonLeg.getString("end_address");
             route.startAddress = jsonLeg.getString("start_address");
+
+            /****/
+            route.startLocationType = jsonStartLocationType.getString("type");
+            route.travelMode = jsonTravelMode.getString("travel_mode");
+            /***/
+
             route.startLocation = new LatLng(jsonStartLocation.getDouble("lat"), jsonStartLocation.getDouble("lng"));
             route.endLocation = new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng"));
             route.points = decodePolyLine(overview_polylineJson.getString("points"));
-
             routes.add(route);
+
         }
+
+
 
         listener.onDirectionFinderSuccess(routes);
     }
@@ -149,5 +163,13 @@ public class DirectionFinder {
         }
 
         return decoded;
+    }
+
+
+    private boolean checkifBar(Route route) throws UnsupportedEncodingException {
+        if(route.travelMode.equals("Driving") && route.startLocationType.equals("bar")){
+            return true;
+        }
+        else return false;
     }
 }
