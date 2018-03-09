@@ -86,8 +86,12 @@ public class DirectionFinder {
             return;
 
         List<Route> routes = new ArrayList<Route>();
+        boolean bar=false;
         JSONObject jsonData = new JSONObject(data);
         JSONArray jsonRoutes = jsonData.getJSONArray("routes");
+        JSONArray jsonGeocoded_waypoints=jsonData.getJSONArray("geocoded_waypoints");
+
+
         for (int i = 0; i < jsonRoutes.length(); i++) {
             JSONObject jsonRoute = jsonRoutes.getJSONObject(i);
             Route route = new Route();
@@ -99,31 +103,26 @@ public class DirectionFinder {
             JSONObject jsonDuration = jsonLeg.getJSONObject("duration");
             JSONObject jsonEndLocation = jsonLeg.getJSONObject("end_location");
             JSONObject jsonStartLocation = jsonLeg.getJSONObject("start_location");
-
-
-            /***/
-            JSONObject jsonStartLocationType = jsonLeg.getJSONObject("types");
             JSONObject jsonTravelMode = jsonLeg.getJSONObject("travel_mode");
-            /***/
 
             route.distance = new Distance(jsonDistance.getString("text"), jsonDistance.getInt("value"));
             route.duration = new Duration(jsonDuration.getString("text"), jsonDuration.getInt("value"));
             route.endAddress = jsonLeg.getString("end_address");
             route.startAddress = jsonLeg.getString("start_address");
-
-            /****/
-            route.startLocationTypes = getStringListFromJsonArray(jsonStartLocationType.getJSONArray("types"));
             route.travelMode = jsonTravelMode.getString("travel_mode");
-            /***/
-
             route.startLocation = new LatLng(jsonStartLocation.getDouble("lat"), jsonStartLocation.getDouble("lng"));
             route.endLocation = new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng"));
             route.points = decodePolyLine(overview_polylineJson.getString("points"));
+
+                for (int j = 0; j < jsonGeocoded_waypoints.length(); j++) {
+                    JSONObject jsonWayPoint = jsonGeocoded_waypoints.getJSONObject(j);
+                    JSONArray jsonLocationType =jsonWayPoint.getJSONArray("types");
+                    route.startLocationTypes = getStringListFromJsonArray(jsonLocationType);
+
+                }
             routes.add(route);
 
         }
-
-
 
         listener.onDirectionFinderSuccess(routes);
     }
