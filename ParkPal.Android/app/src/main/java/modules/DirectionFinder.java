@@ -81,16 +81,56 @@ public class DirectionFinder {
         }
     }
 
+/*private void parseJSon(String data) throws JSONException {
+    if (data == null)
+        return;
+
+    List<Route> routes = new ArrayList<Route>();
+    JSONObject jsonData = new JSONObject(data);
+    JSONArray jsonRoutes = jsonData.getJSONArray("routes");
+    JSONArray jsonGeoCodedWaypoints = jsonData.getJSONArray("geocoded_waypoints");
+    JSONObject jsonOriginGWType = jsonGeoCodedWaypoints.getJSONObject(0);
+    List<String> aTypes=getStringListFromJsonArray(jsonOriginGWType.getJSONArray("types"));
+
+    for (int i = 0; i < jsonRoutes.length(); i++) {
+        JSONObject jsonRoute = jsonRoutes.getJSONObject(i);
+        Route route = new Route();
+        route.startLocationTypes=aTypes;
+        JSONObject overview_polylineJson = jsonRoute.getJSONObject("overview_polyline");
+        JSONArray jsonLegs = jsonRoute.getJSONArray("legs");
+        JSONObject jsonLeg = jsonLegs.getJSONObject(0);
+        JSONObject jsonDistance = jsonLeg.getJSONObject("distance");
+        JSONObject jsonDuration = jsonLeg.getJSONObject("duration");
+        JSONObject jsonEndLocation = jsonLeg.getJSONObject("end_location");
+        JSONObject jsonStartLocation = jsonLeg.getJSONObject("start_location");
+
+
+        route.distance = new Distance(jsonDistance.getString("text"), jsonDistance.getInt("value"));
+        route.duration = new Duration(jsonDuration.getString("text"), jsonDuration.getInt("value"));
+        route.endAddress = jsonLeg.getString("end_address");
+        route.startAddress = jsonLeg.getString("start_address");
+        route.startLocation = new LatLng(jsonStartLocation.getDouble("lat"), jsonStartLocation.getDouble("lng"));
+        route.endLocation = new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng"));
+        route.points = decodePolyLine(overview_polylineJson.getString("points"));
+        route.travelMode=jsonLeg.getString("travel_mode");
+
+        routes.add(route);
+    }
+
+    listener.onDirectionFinderSuccess(routes);
+}*/
+
     private void parseJSon(String data) throws JSONException {
         if (data == null)
             return;
-
+        boolean containsBar=false;
         List<Route> routes = new ArrayList<Route>();
-        boolean bar=false;
         JSONObject jsonData = new JSONObject(data);
         JSONArray jsonRoutes = jsonData.getJSONArray("routes");
-        JSONArray jsonGeocoded_waypoints=jsonData.getJSONArray("geocoded_waypoints");
-
+        JSONArray jsonGeoCodedWaypoints = jsonData.getJSONArray("geocoded_waypoints");
+        JSONObject jsonOriginGWType = jsonGeoCodedWaypoints.getJSONObject(0);
+        List<String> aTypes=getStringListFromJsonArray(jsonOriginGWType.getJSONArray("types"));
+        if(aTypes.contains("bar")) containsBar=true;
 
         for (int i = 0; i < jsonRoutes.length(); i++) {
             JSONObject jsonRoute = jsonRoutes.getJSONObject(i);
@@ -103,30 +143,24 @@ public class DirectionFinder {
             JSONObject jsonDuration = jsonLeg.getJSONObject("duration");
             JSONObject jsonEndLocation = jsonLeg.getJSONObject("end_location");
             JSONObject jsonStartLocation = jsonLeg.getJSONObject("start_location");
-            JSONObject jsonTravelMode = jsonLeg.getJSONObject("travel_mode");
 
             route.distance = new Distance(jsonDistance.getString("text"), jsonDistance.getInt("value"));
             route.duration = new Duration(jsonDuration.getString("text"), jsonDuration.getInt("value"));
             route.endAddress = jsonLeg.getString("end_address");
             route.startAddress = jsonLeg.getString("start_address");
-            route.travelMode = jsonTravelMode.getString("travel_mode");
             route.startLocation = new LatLng(jsonStartLocation.getDouble("lat"), jsonStartLocation.getDouble("lng"));
             route.endLocation = new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng"));
             route.points = decodePolyLine(overview_polylineJson.getString("points"));
-
-                for (int j = 0; j < jsonGeocoded_waypoints.length(); j++) {
-                    JSONObject jsonWayPoint = jsonGeocoded_waypoints.getJSONObject(j);
-                    JSONArray jsonLocationType =jsonWayPoint.getJSONArray("types");
-                    route.startLocationTypes = getStringListFromJsonArray(jsonLocationType);
-
-                }
+            route.startLocationTypes=aTypes;
+            if(containsBar==true) route.containsBar=true;
             routes.add(route);
-
         }
+
+
+
 
         listener.onDirectionFinderSuccess(routes);
     }
-
     private List<LatLng> decodePolyLine(final String poly) {
         int len = poly.length();
         int index = 0;

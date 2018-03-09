@@ -152,9 +152,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng MTL = new LatLng(45.5, -73.57);
+        mMap.addMarker(new MarkerOptions().position(MTL).title("Marker in MTL"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(MTL));
 
         // Checking if all the required permissions are enabled in the Android Manifest file
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -226,10 +226,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 distance = route.distance.value;
                 distRoute = route;
             }
-            if(route.startLocationTypes.contains("bar") && route.travelMode.equalsIgnoreCase("Driving")){
-                Toast.makeText(this, "Don't drink and drive Nigga!", Toast.LENGTH_SHORT).show();
-                System.out.println("dont drink and drive");
-            }
+
         }
 
         drawRoute(getSelectedRoute(timeRoute, distRoute));
@@ -267,6 +264,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @param route
      */
     private void drawRoute(Route route) {
+        if(route.containsBar && transportation.equals("driving")){
+            Toast.makeText(this, "Warning! Dont Drink and drive!", Toast.LENGTH_SHORT).show();
+
+        }
         polylinePaths = new ArrayList<>();
         originMarkers = new ArrayList<>();
         destinationMarkers = new ArrayList<>();
@@ -294,11 +295,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         polylinePaths.add(mMap.addPolyline(polylineOptions));
     }
 
-    private void checkSafety(String addressA, String adressB){
-        if (transportation.equals("driving")){
-            System.out.println("Don't die");
-        }
-    }
 }
 
 
