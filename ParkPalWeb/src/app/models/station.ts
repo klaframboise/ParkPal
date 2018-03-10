@@ -4,7 +4,6 @@ export class Station {
         LATITUDE: number,
         LONGITUDE: number,
         NOM_STAT: string,
-        LIGNE: string,
         STAT_VELO: string,
         STAT_REG: string,
         STAT_PAYANT: string,
