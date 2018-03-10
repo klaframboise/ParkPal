@@ -57,7 +57,14 @@ export class MapComponent implements OnInit {
 
     let start = this.origin;
     let end = this.destination;
-    let transport = this.methodOfTransp;
+    let parkAndRide;
+    let transport;
+    if (this.methodOfTransp == "PNR") {
+      parkAndRide = true;
+      transport = "TRANSIT";
+    } else {
+      transport = this.methodOfTransp;
+    }
     let preference = this.routePreference;
 
     var request = {
@@ -87,6 +94,8 @@ export class MapComponent implements OnInit {
           var fastestRoute = result.routes[0];
           result.routes.length = 0;
           result.routes.push(fastestRoute);
+          console.log(fastestRoute.legs["0"].steps["0"].end_point.lat());
+          console.log(fastestRoute.legs["0"].steps["0"].end_point.lng());
         }
         this.directionsDisplay.setDirections(result);
       } else if (google.maps.DirectionsStatus == 'ZERO_RESULTS') {
@@ -105,6 +114,8 @@ export class MapComponent implements OnInit {
   ngOnInit() {
 
     this.stations = Stations;
+
+    this.getClosestMetroWithParking("test");
 
     let mapProp = {
         center: new google.maps.LatLng(45.504386, -73.576659),
@@ -130,4 +141,31 @@ export class MapComponent implements OnInit {
     autocompleteFrom.bindTo('bounds', this.map);
     autocompleteTo.bindTo('bounds', this.map);
   }
+
+  getClosestMetroWithParking (currentLocation) {
+    let closestStation;
+    let minDistance = 0;
+    for (let station of this.stations) {
+      
+    }
+  }
+
+  distanceBetweenPoints(one, two) {
+    var R = 6371e3; // metres
+    var φ1 = one[0].toRadians();
+    var φ2 = two[0].toRadians();
+    var Δφ = this.toRadians(two[0]-one[0]);
+    var Δλ = this.toRadians(two[1]-one[1]);
+
+    var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    return R * c;
+  }
+
+  toRadians(degrees) {
+    return degrees * Math.PI / 180;
+  };
 }
