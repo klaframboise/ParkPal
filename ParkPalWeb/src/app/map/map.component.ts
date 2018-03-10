@@ -94,8 +94,8 @@ export class MapComponent implements OnInit {
           var fastestRoute = result.routes[0];
           result.routes.length = 0;
           result.routes.push(fastestRoute);
-          console.log(fastestRoute.legs["0"].steps["0"].end_point.lat());
-          console.log(fastestRoute.legs["0"].steps["0"].end_point.lng());
+          // console.log(result);
+          console.log(this.getClosestMetroWithParking([fastestRoute.legs["0"].start_location.lat(), fastestRoute.legs["0"].start_location.lng()]))
         }
         this.directionsDisplay.setDirections(result);
       } else if (google.maps.DirectionsStatus == 'ZERO_RESULTS') {
@@ -114,8 +114,6 @@ export class MapComponent implements OnInit {
   ngOnInit() {
 
     this.stations = Stations;
-
-    this.getClosestMetroWithParking("test");
 
     let mapProp = {
         center: new google.maps.LatLng(45.504386, -73.576659),
@@ -142,18 +140,23 @@ export class MapComponent implements OnInit {
     autocompleteTo.bindTo('bounds', this.map);
   }
 
-  getClosestMetroWithParking (currentLocation) {
+  getClosestMetroWithParking ([currentLat, currentLong]) {
     let closestStation;
-    let minDistance = 0;
+    let minDistance = Number.MAX_VALUE;
     for (let station of this.stations) {
-      
+      let distance = this.distanceBetweenPoints([currentLat, currentLong], [station.properties.LATITUDE, station.properties.LONGITUDE]);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestStation = station;
+      }
     }
+    return closestStation;
   }
 
   distanceBetweenPoints(one, two) {
     var R = 6371e3; // metres
-    var φ1 = one[0].toRadians();
-    var φ2 = two[0].toRadians();
+    var φ1 = this.toRadians(one[0]);
+    var φ2 = this.toRadians(two[0]);
     var Δφ = this.toRadians(two[0]-one[0]);
     var Δλ = this.toRadians(two[1]-one[1]);
 
