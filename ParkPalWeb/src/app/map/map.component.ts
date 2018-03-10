@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 import { log } from 'util';
 import { } from '@types/googlemaps';
+import { Stations } from '../../assets/stations-data'
+import { Station } from '../models/station'
 
 declare const google: any;
 
@@ -23,6 +25,8 @@ export class MapComponent implements OnInit {
   map:any;
   directionsService: google.maps.DirectionsService;
   directionsDisplay: google.maps.DirectionsRenderer;
+
+  stations: Station[];
 
   check(directionTrue:number){
     if(this.directionTrue==1){
@@ -99,6 +103,8 @@ export class MapComponent implements OnInit {
 
 
   ngOnInit() {
+
+    this.stations = Stations;
 
     let mapProp = {
         center: new google.maps.LatLng(45.504386, -73.576659),
