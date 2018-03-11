@@ -1,8 +1,16 @@
 package modules;
 
+import android.app.Activity;
 import android.location.Location;
+import android.location.Geocoder;
+import android.location.Address;
 import android.os.AsyncTask;
+import android.content.Context;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.data.geojson.GeoJsonFeature;
+import com.google.maps.android.data.geojson.GeoJsonLayer;
+import com.mcdevz.parkpal.MapsActivity;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -165,6 +173,8 @@ public class DirectionFinder {
         }
         return false;
     }
+
+
 
     public static List<String> getStringListFromJsonArray(JSONArray jArray) throws JSONException {
         List<String> returnList = new ArrayList<String>();

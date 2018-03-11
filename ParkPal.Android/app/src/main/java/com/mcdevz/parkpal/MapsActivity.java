@@ -1,5 +1,8 @@
 package com.mcdevz.parkpal;
 
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
@@ -23,14 +26,22 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.data.Feature;
+import com.google.maps.android.data.geojson.GeoJsonFeature;
+import com.google.maps.android.data.geojson.GeoJsonLayer;
+import com.google.maps.android.data.geojson.GeoJsonPointStyle;
 import com.mcdevz.parkpal.uber.UberAPIController;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private EditText etOrigin;
     private EditText etDestination;
     private ProgressDialog progressDialog;
+    private final static String mLogTag = "GeoJson";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +116,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     transportation = "uber";
                 }
                 break;
+            case R.id.radioParknride:
+                if (checked) {
+                    transportation = "parknride";
+                }
         }
     }
 
@@ -125,9 +141,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         try {
-            if(transportation.equals("uber")) {
+            if (transportation.equals("uber")) {
                 Log.d("parkpal", "Starting direction finder with driving");
                 new DirectionFinder(this, origin, destination, "driving").execute();
+            }
+            else if (transportation.equals("parknride")) {
+
+                try {
+
+                    GeoJsonLayer layer = new GeoJsonLayer(getMap(), R.raw.stat_incitatifs, this);
+                    String closestParking = getClosestParking(origin, layer);
+                    new DirectionFinder(this, origin, closestParking, "driving").execute();
+
+                } catch (IOException e) {
+                    Log.e(mLogTag, "GeoJSON file could not be read");
+                } catch (JSONException e) {
+                    Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+                }
             }
             else {
                 new DirectionFinder(this, origin, destination, transportation).execute();
@@ -156,6 +186,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(MTL).title("Marker in MTL"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(MTL));
 
+        try {
+            GeoJsonLayer layer = new GeoJsonLayer(getMap(), R.raw.stat_incitatifs, this);
+            customizeMarkers(layer);
+            layer.addLayerToMap();
+        } catch (IOException e) {
+            Log.e(mLogTag, "GeoJSON file could not be read");
+        } catch (JSONException e) {
+            Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+        }
+
         // Checking if all the required permissions are enabled in the Android Manifest file
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -163,26 +203,49 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMyLocationEnabled(true);
     }
 
+    public void customizeMarkers(GeoJsonLayer layer) {
+
+        for (GeoJsonFeature feature : layer.getFeatures()) {
+
+            BitmapDescriptor pointIcon = BitmapDescriptorFactory.defaultMarker();
+
+            GeoJsonPointStyle pointStyle = new GeoJsonPointStyle();
+
+            pointStyle.setIcon(pointIcon);
+            pointStyle.setTitle("Stationnement " + feature.getProperty(("NOM_STAT")));
+            pointStyle.setSnippet(Integer.parseInt(feature.getProperty("STAT_REG"))+ " total parking spots");
+            feature.setPointStyle(pointStyle);
+        }
+    }
+
+
     @Override
     public void onDirectionFinderStart() {
         progressDialog = ProgressDialog.show(this, "Please wait.",
                 "Finding direction..!", true);
 
-        if (originMarkers != null) {
-            for (Marker marker : originMarkers) {
-                marker.remove();
-            }
-        }
+        if (transportation != "parknride") {
 
-        if (destinationMarkers != null) {
-            for (Marker marker : destinationMarkers) {
-                marker.remove();
-            }
-        }
 
-        if (polylinePaths != null) {
-            for (Polyline polyline:polylinePaths ) {
-                polyline.remove();
+            if (originMarkers != null) {
+                for (Marker marker : originMarkers) {
+                    marker.remove();
+                    getMap().clear();
+                }
+            }
+
+            if (destinationMarkers != null) {
+                for (Marker marker : destinationMarkers) {
+                    marker.remove();
+                    getMap().clear();
+                }
+            }
+
+            if (polylinePaths != null) {
+                for (Polyline polyline : polylinePaths) {
+                    polyline.remove();
+                    getMap().clear();
+                }
             }
         }
     }
@@ -204,6 +267,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
             return;
+        }
+
+
+        if (transportation.equals("parknride")) {
+
+            try {
+                GeoJsonLayer layer = new GeoJsonLayer(getMap(), R.raw.stat_incitatifs, this);
+                new DirectionFinder(this, getClosestParking(etOrigin.getText().toString(), layer), etDestination.getText().toString(), "transit").execute();
+                transportation = "transit";
+            } catch (IOException e) {
+                Log.e(mLogTag, "GeoJSON file could not be read");
+            } catch (JSONException e) {
+                Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+            }
         }
 
         /* Check if routes were found */
@@ -295,6 +372,63 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         polylinePaths.add(mMap.addPolyline(polylineOptions));
     }
 
+    protected GoogleMap getMap() {
+        return mMap;
+    }
+
+    public String getClosestParking(String locationA, GeoJsonLayer layer) {
+
+        Geocoder gc = new Geocoder(this);
+        float minDistance = -1;
+        String closestParking = null;
+        double latA = 0.0;
+        double lngA = 0.0;
+        double latB;
+        double lngB;
+
+        /*List<Address> list;
+
+
+        try {
+
+            list = gc.getFromLocationName(locationA, 1);
+
+            if (list == null) {
+                return null;
+            }
+            while (list.size() == 0) {
+                list = gc.getFromLocationName(locationA, 1);
+            }
+            if (list.size() > 0) {
+                Address address = list.get(0);
+                latA = address.getLatitude();
+                lngA = address.getLongitude();
+            }
+                  catch (IOException ex) {
+            ex.printStackTrace();
+        }
+         */
+            for (GeoJsonFeature feature : layer.getFeatures()) {
+
+                latB = Double.parseDouble(feature.getProperty("LATITUDE"));
+                lngB = Double.parseDouble(feature.getProperty("LONGITUDE"));
+
+                float[] results = new float[1];
+                Location.distanceBetween(45.577058, -73.759869, latB, lngB, results);
+                float distance = results[0];
+
+                System.out.println(feature.getProperty("NOM_STAT") + "          " + distance);
+
+                if (minDistance == -1 || distance < minDistance) {
+                    minDistance = distance;
+                    closestParking = feature.getProperty("NOM_STAT");
+                    System.out.println(closestParking + "                        " + minDistance);
+                }
+
+            }
+
+            return closestParking;
+    }
 }
 
 
