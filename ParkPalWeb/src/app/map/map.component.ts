@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 import { log } from 'util';
 import { } from '@types/googlemaps';
-import { CookieService } from 'ngx-cookie-service';
 
 declare const google: any;
 
@@ -20,7 +19,6 @@ export class MapComponent implements OnInit {
   directionTrue:number;
   methodOfTransp: string;
   routePreference: string;
-  cookieValue = 'UNKNOWN';
 
   map:any;
   directionsService: google.maps.DirectionsService;
@@ -36,7 +34,7 @@ export class MapComponent implements OnInit {
   }
 
  
-  constructor(private data: DataService, private cookieService: CookieService) { }
+  constructor(private data: DataService) { }
 
   findDirection(){
     console.log("Finding Route to: "+this.origin+this.methodOfTransp)
@@ -102,9 +100,6 @@ export class MapComponent implements OnInit {
 
   ngOnInit() {
 
-    this.cookieService.set('Test', 'Hello World');
-    this.cookieValue = this.cookieService.get('Test');
-    console.log(this.cookieValue);
     let mapProp = {
         center: new google.maps.LatLng(45.504386, -73.576659),
         zoom: 11,
