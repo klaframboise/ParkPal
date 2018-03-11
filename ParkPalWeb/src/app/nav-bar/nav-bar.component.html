@@ -1,8 +1,23 @@
 <nav (keyup.enter)="newMessage(originInput.value,destinationInput.value)">
   <div class="topnav" >
-    <input type="text" placeholder="Your Location" id="from" #originInput>
-    <input type="text" placeholder="Choose Destination" id="to"#destinationInput>
+    <div class="inputAddress">
+      <input type="text" placeholder="Your Location" id="from" #originInput>
+      <ul class="onclick-menu-content" id="originHistory">
+        <li *ngFor="let cookie of cookiesList"><button class="dropdownBtn" (click)="updateAddress(cookie, 'from')">{{ cookie }}</button></li>
+      </ul>
+      <button (click)="showDropDown('originHistory')" class="transButton" id="origin_dropdown"><i class="fa fa-caret-down"></i></button>
+    </div>
+
+    <div class="inputAddress">
+      <input type="text" placeholder="Choose Destination" id="to" #destinationInput>
+      <ul class="onclick-menu-content" id="destHistory">
+        <li *ngFor="let cookie of cookiesList"><button class="dropdownBtn" (click)="updateAddress(cookie, 'to')">{{ cookie }}</button></li>
+      </ul>
+      <button (click)="showDropDown('destHistory')" class="transButton" id="destination_dropdown"><i class="fa fa-caret-down"></i></button>
+    </div>
+
     <button (click)="newMessage(originInput.value,destinationInput.value)" id="searchBtn">Search</button>
+    <button (click)="showList()" id="searchBtn">List Parking Areas</button>
   </div>
   <div class="logonav">
     <button class="transButton" (click)="setType('TRANSIT',0)"><img src="../assets/bus.png" class="transImg" alt="Bus Logo" width="20px" height="20px"></button>
