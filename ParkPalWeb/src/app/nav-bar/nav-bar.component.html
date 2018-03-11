@@ -1,6 +1,8 @@
 <nav (keyup.enter)="newMessage(originInput.value,destinationInput.value)">
   <div class="topnav" >
     <input type="text" placeholder="Your Location" id="from" #originInput>
+    <button (click)="showDropDown()"class="transButton" id="origin_dropdown"><i class="fa fa-caret-down"></i></button>
+    <textarea id="Hello">Hello</textarea>
     <input type="text" placeholder="Choose Destination" id="to"#destinationInput>
     <button (click)="newMessage(originInput.value,destinationInput.value)" id="searchBtn">Search</button>
   </div>

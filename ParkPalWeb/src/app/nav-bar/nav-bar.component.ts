@@ -56,6 +56,7 @@ export class NavBarComponent implements OnInit {
     this.data.currentRoutePref.subscribe(routePref => this.routePreference = routePref)
   }
 
+  // this function is called whenever seaarch button is pressed to update cookies
   updateCookies(origin: string, destination: string) {
     if (this.cookiesList.length >= 5) {
       if (this.cookiesList.indexOf(origin) == -1) {
@@ -95,4 +96,15 @@ export class NavBarComponent implements OnInit {
       this.updateCookies(origin, destination)
     }
   }
+  showDropDown() {
+    console.log((<HTMLTextAreaElement>document.getElementById('Hello')).style.display);
+    var my_disply = (<HTMLTextAreaElement>document.getElementById('Hello')).style.display;
+    if (my_disply == "block") {
+      (<HTMLTextAreaElement>document.getElementById('Hello')).style.display = "none";
+      console.log("i am in block and becoming none");
+    }
+    else
+      document.getElementById('Hello').style.display = "block";
+  }
 }
+
