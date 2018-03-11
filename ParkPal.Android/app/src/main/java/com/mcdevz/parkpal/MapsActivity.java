@@ -1,6 +1,8 @@
 package com.mcdevz.parkpal;
 
+import android.content.SharedPreferences;
 import android.location.Location;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -13,8 +15,10 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -30,7 +34,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.mcdevz.parkpal.uber.UberAPIController;
+import com.reginald.editspinner.EditSpinner;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,29 +55,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Marker> destinationMarkers;
     private List<Polyline> polylinePaths;
    // private View view;
-    private EditText etOrigin;
-    private EditText etDestination;
+    private EditSpinner etOrigin;
+    private EditSpinner etDestination;
     private ProgressDialog progressDialog;
+    private ArrayList<String> history;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        if (history == null) {
+            history = new ArrayList<String>();
+        }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        try {
+            history = (ArrayList<String>) ObjectSerializer.deserialize(prefs.getString("HISTORY", ObjectSerializer.serialize(new ArrayList<String>())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         btnGo = (Button) findViewById(R.id.btnGo);
-        etOrigin = (EditText) findViewById(R.id.etOrigin);
-        etDestination = (EditText) findViewById(R.id.etDestination);
+        etOrigin = (EditSpinner) findViewById(R.id.etOrigin);
+        etDestination = (EditSpinner) findViewById(R.id.etDestination);
         transGroup = (RadioGroup) findViewById(R.id.transGroup);
         btnTrans = (RadioButton) findViewById(transGroup.getCheckedRadioButtonId());
         transportation = btnTrans.getText().toString();
+        ListAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,
+                history);
+        etOrigin.setAdapter(adapter);
+        etDestination.setAdapter(adapter);
 
         btnGo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                addString(etDestination.getText().toString());
+                addString(etOrigin.getText().toString());
                 Log.d("parkpal", "transportation mode on Go click: " + transportation);
                 sendRequest();
             }
@@ -293,6 +317,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             polylineOptions.add(route.points.get(i));
 
         polylinePaths.add(mMap.addPolyline(polylineOptions));
+    }
+
+    public void addString(String s) {
+        if (history == null) {
+            history = new ArrayList<String>();
+        }
+        history.add(s);
+
+        // save the task list to preference
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        try {
+            editor.putString("HISTORY", ObjectSerializer.serialize(history));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        editor.commit();
     }
 
 }
