@@ -51,6 +51,11 @@ public class GTFSDownloadHelper {
     private Hashtable<URL, String> downloadLinks;
 
     /**
+     * ScheduleSystem to be built with downloaded files.
+     */
+    private ScheduleSystem scheduleSystem;
+
+    /**
      * Indicates whether or not to overwrite the previously downloaded GTFS.
      */
     private boolean overwrite;
@@ -58,10 +63,12 @@ public class GTFSDownloadHelper {
     /**
      * Constructs a GTFSDownloadHelper and builds the download links dictionary.
      * @param context {@link #context}
+     * @param scheduleSystem {@link #scheduleSystem}
      * @param overwrite {@link #overwrite}
      */
-    public GTFSDownloadHelper(Context context, boolean overwrite) {
+    public GTFSDownloadHelper(Context context, ScheduleSystem scheduleSystem, boolean overwrite) {
         this.context = context;
+        this.scheduleSystem = scheduleSystem;
         this.overwrite = overwrite;
         makeDownloadLinks();
     }
@@ -118,6 +125,8 @@ public class GTFSDownloadHelper {
      */
     private class ExtractFilesTask extends AsyncTask<String, Integer, Integer> {
 
+        File gtfsDir = new File(context.getFilesDir(), "gtfs");
+
         /**
          * Extracts the files.
          * @param fileNames names of the files to extract
@@ -165,6 +174,7 @@ public class GTFSDownloadHelper {
         @Override
         protected void onPostExecute(Integer result) {
             Log.d(TAG, "Extraction finished. " + result + " entries uncompressed");
+            scheduleSystem.parseFeeds(gtfsDir);
         }
 
         /**
@@ -176,11 +186,12 @@ public class GTFSDownloadHelper {
          */
         private int extractFeed(String zipFileName) throws IOException {
 
-            // Get file
+            // Get files
             File file = new File(context.getFilesDir(), zipFileName);
 
             /* Create extraction directory */
-            File outDir = new File(context.getFilesDir(), zipFileName.split("_")[1]);
+            if(!gtfsDir.exists()) gtfsDir.mkdir();
+            File outDir = new File(gtfsDir, zipFileName.split("_")[1]);
             if(outDir.exists() && !overwrite) return 0;
             else if(outDir.exists() && overwrite) outDir.delete();
             outDir.mkdir();
@@ -282,6 +293,7 @@ public class GTFSDownloadHelper {
             Log.d(TAG, "Download finished. " + result + " bytes downloaded");
             String[] fileNames = downloadLinks.values().toArray(new String[1]);
             Log.d(TAG, fileNames.length + " files to extract. First file: " + fileNames[0]);
+
             new ExtractFilesTask().execute(fileNames);
         }
 
@@ -373,5 +385,9 @@ public class GTFSDownloadHelper {
             out.close();
             return result;
         }
+    }
+
+    public Hashtable<URL, String> getDownloadLinks() {
+        return downloadLinks;
     }
 }

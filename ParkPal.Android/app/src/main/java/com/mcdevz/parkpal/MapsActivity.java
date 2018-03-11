@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.mcdevz.parkpal.gtfs.GTFSDownloadHelper;
+import com.mcdevz.parkpal.gtfs.ScheduleSystem;
 import com.mcdevz.parkpal.uber.UberAPIController;
 
 import java.io.UnsupportedEncodingException;
@@ -87,7 +88,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             startActivity(intent);
         }
 
-        new GTFSDownloadHelper(this, false).downloadGTFS();
+        new ScheduleSystem(this);
     }
 
     /**
