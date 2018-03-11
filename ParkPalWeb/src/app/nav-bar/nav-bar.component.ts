@@ -4,8 +4,6 @@ import { DataService } from '../data.service';
 import { Input } from '@angular/core/src/metadata/directives';
 import { CookieService } from 'ngx-cookie-service';
 
-
-
 @Component({
   selector: 'app-nav-bar',
   templateUrl: './nav-bar.component.html',
@@ -109,6 +107,9 @@ export class NavBarComponent implements OnInit {
 
   updateAddress(address: string, element: string) {
     (<HTMLTextAreaElement>document.getElementById(element)).value = address;
+  }
+  showList(){
+    this.data.changeHideList();
   }
 }
 
