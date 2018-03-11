@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
+import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { NavBarComponent } from './nav-bar/nav-bar.component';
@@ -19,7 +19,8 @@ import { UiSwitchModule } from 'angular2-ui-switch'
   ],
   imports: [
     BrowserModule,
-    UiSwitchModule
+    UiSwitchModule,
+    FormsModule
   ],
   providers: [CookieService],
   bootstrap: [AppComponent]

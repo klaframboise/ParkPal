@@ -96,15 +96,15 @@ export class NavBarComponent implements OnInit {
       this.updateCookies(origin, destination)
     }
   }
-  showDropDown() {
-    console.log((<HTMLTextAreaElement>document.getElementById('Hello')).style.display);
-    var my_disply = (<HTMLTextAreaElement>document.getElementById('Hello')).style.display;
+  showDropDown(value:string) {
+    console.log((<HTMLTextAreaElement>document.getElementById(value)).style.display);
+    var my_disply = (<HTMLTextAreaElement>document.getElementById(value)).style.display;
     if (my_disply == "block") {
-      (<HTMLTextAreaElement>document.getElementById('Hello')).style.display = "none";
+      (<HTMLTextAreaElement>document.getElementById(value)).style.display = "none";
       console.log("i am in block and becoming none");
     }
     else
-      document.getElementById('Hello').style.display = "block";
+      document.getElementById(value).style.display = "block";
   }
 }
 
