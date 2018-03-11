@@ -3,7 +3,7 @@
     <div class="inputAddress">
       <input type="text" placeholder="Your Location" id="from" #originInput>
       <ul class="onclick-menu-content" id="originHistory">
-        <li *ngFor="let cookie of cookiesList"><button class="dropdownBtn" onclick="alert('click 1')">{{ cookie }}</button></li>
+        <li *ngFor="let cookie of cookiesList"><button class="dropdownBtn" (click)="updateAddress(cookie, 'from')">{{ cookie }}</button></li>
       </ul>
       <button (click)="showDropDown('originHistory')" class="transButton" id="origin_dropdown"><i class="fa fa-caret-down"></i></button>
     </div>
@@ -11,7 +11,7 @@
     <div class="inputAddress">
       <input type="text" placeholder="Choose Destination" id="to" #destinationInput>
       <ul class="onclick-menu-content" id="destHistory">
-        <li *ngFor="let cookie of cookiesList"><button class="dropdownBtn" onclick="alert('click 1')">{{ cookie }}</button></li>
+        <li *ngFor="let cookie of cookiesList"><button class="dropdownBtn" (click)="updateAddress(cookie, 'to')">{{ cookie }}</button></li>
       </ul>
       <button (click)="showDropDown('destHistory')" class="transButton" id="destination_dropdown"><i class="fa fa-caret-down"></i></button>
     </div>

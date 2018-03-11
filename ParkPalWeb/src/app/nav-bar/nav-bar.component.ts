@@ -56,7 +56,7 @@ export class NavBarComponent implements OnInit {
     this.data.currentRoutePref.subscribe(routePref => this.routePreference = routePref)
   }
 
-  // this function is called whenever seaarch button is pressed to update cookies
+  // this function is called whenever search button is pressed to update cookies
   updateCookies(origin: string, destination: string) {
     if (this.cookiesList.length >= 5) {
       if (this.cookiesList.indexOf(origin) == -1) {
@@ -96,15 +96,19 @@ export class NavBarComponent implements OnInit {
       this.updateCookies(origin, destination)
     }
   }
+
+  // JS function responsible for hiding/unhiding history dropdown
   showDropDown(value:string) {
-    console.log((<HTMLTextAreaElement>document.getElementById(value)).style.display);
     var my_disply = (<HTMLTextAreaElement>document.getElementById(value)).style.display;
     if (my_disply == "block") {
       (<HTMLTextAreaElement>document.getElementById(value)).style.display = "none";
-      console.log("i am in block and becoming none");
     }
     else
       document.getElementById(value).style.display = "block";
+  }
+
+  updateAddress(address: string, element: string) {
+    (<HTMLTextAreaElement>document.getElementById(element)).value = address;
   }
 }
 
