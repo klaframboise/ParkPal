@@ -151,7 +151,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Montral and move the camera, changed from the original Sydney location
+        // Add a marker in Montreal and move the camera, changed from the original Sydney location
         LatLng MTL = new LatLng(45.5, -73.57);
         mMap.addMarker(new MarkerOptions().position(MTL).title("Marker in MTL"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(MTL));
@@ -265,7 +265,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void drawRoute(Route route) {
         if(route.containsBar && transportation.equals("driving")){
-            Toast.makeText(this, "Warning! Dont Drink and drive!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Warning! Dont Drink and drive! You can continue driving if you are sober. Otherwise, please use the provided Transit or Uber directions!", Toast.LENGTH_SHORT).show();
 
         }
         polylinePaths = new ArrayList<>();
