@@ -3,16 +3,12 @@ import { Component, OnInit, style } from '@angular/core';
 import { DataService } from '../data.service';
 import { Input } from '@angular/core/src/metadata/directives';
 
-
-
 @Component({
   selector: 'app-nav-bar',
   templateUrl: './nav-bar.component.html',
   styleUrls: ['./nav-bar.component.sass']
 })
 export class NavBarComponent implements OnInit {
-
-
 
   origin:string;
   destination:string;
@@ -55,5 +51,9 @@ export class NavBarComponent implements OnInit {
       this.data.changeMethodOfTransp(this.methodOfTransp)
       this.data.changeMethodOfRoutePref(this.routePreference)
     }
+  }
+
+  showList(){
+    this.data.changeHideList();
   }
 }

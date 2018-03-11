@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { SideMenuComponent } from './side-menu/side-menu.component'
 
 
 @Injectable()
@@ -17,6 +18,7 @@ export class DataService {
   currentNumber = this.numberSource.asObservable();
   currentTransport = this.methodOfTransp.asObservable();
   currentRoutePref = this.methodOfRoutePref.asObservable();
+  hideList = true;
 
   constructor() { }
 
@@ -38,5 +40,9 @@ export class DataService {
 
   changeMethodOfRoutePref(routePreference: string) {
     this.methodOfRoutePref.next(routePreference)
+  }
+
+  changeHideList(){
+      this.hideList = !this.hideList;
   }
 }

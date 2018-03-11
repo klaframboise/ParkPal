@@ -1,2 +1,8 @@
 <div class="container" id="routeoptions">
+        <input id="search" [(ngModel)]="searchText" placeholder="search text goes here">
+        <li id="parking" *ngFor="let station of stations | filter : searchText" [hidden]="this.data.hideList">
+            {{station.properties.NOM_STAT}}
+            <p> Number of free parking spots: {{station.properties.STAT_REG}}</p>
+            <p>Number of paid parking spots: {{station.properties.STAT_PAYANT}}</p>    
+        </li>
 </div>
