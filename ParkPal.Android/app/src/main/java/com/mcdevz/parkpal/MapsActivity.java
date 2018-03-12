@@ -36,6 +36,7 @@ import com.mcdevz.parkpal.gtfs.GTFSDownloadHelper;
 import com.mcdevz.parkpal.gtfs.ScheduleSystem;
 import com.mcdevz.parkpal.uber.UberAPIController;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +54,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Marker> originMarkers;
     private List<Marker> destinationMarkers;
     private List<Polyline> polylinePaths;
-   // private View view;
     private EditText etOrigin;
     private EditText etDestination;
     private ProgressDialog progressDialog;
@@ -87,8 +87,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Intent intent = new Intent(this, ScheduleBrowser.class);
             startActivity(intent);
         }
-
-        new ScheduleSystem(this);
+        else if(ScheduleSystem.gtfsDownloadNeeded(this)) {
+            ScheduleSystem.downloadFeeds(this);
+        }
     }
 
     /**

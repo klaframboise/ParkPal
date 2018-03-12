@@ -22,6 +22,6 @@ public class MockGTFSItem implements GTFSItem {
 
     @Override
     public int getLayout() {
-        return R.layout.agencies_layout;
+        return R.layout.list_item;
     }
 }

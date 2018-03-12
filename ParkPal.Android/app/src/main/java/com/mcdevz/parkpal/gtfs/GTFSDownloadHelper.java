@@ -74,6 +74,15 @@ public class GTFSDownloadHelper {
     }
 
     /**
+     * Downloads the GTFS feeds without building the model.
+     * @param context #{@link #context}
+     * @param overwrite #{@link #overwrite}
+     */
+    public GTFSDownloadHelper(Context context, boolean overwrite) {
+        this(context, null, overwrite);
+    }
+
+    /**
      * Initiates the asynchronous download and decompression of the GTFS files.
      */
     public void downloadGTFS() {
@@ -174,7 +183,14 @@ public class GTFSDownloadHelper {
         @Override
         protected void onPostExecute(Integer result) {
             Log.d(TAG, "Extraction finished. " + result + " entries uncompressed");
-            scheduleSystem.parseFeeds(gtfsDir);
+            /*Delete downloaded zip files*/
+            for(File file : context.getFilesDir().listFiles()) {
+                if(file.getName().matches("^gtfs_[a-zA-Z0-9]+_zip$")) {
+                    Log.d(TAG, "Deleting: " + file.getName());
+                    file.delete();
+                }
+            }
+            if(scheduleSystem != null) scheduleSystem.parseFeeds(gtfsDir);
         }
 
         /**
