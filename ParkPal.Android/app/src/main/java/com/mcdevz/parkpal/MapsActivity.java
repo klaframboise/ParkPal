@@ -5,6 +5,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
@@ -44,12 +45,23 @@ import com.google.maps.android.data.geojson.GeoJsonPointStyle;
 import com.mcdevz.parkpal.uber.UberAPIController;
 import com.reginald.editspinner.EditSpinner;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import javax.net.ssl.HttpsURLConnection;
+
 import modules.DirectionFinder;
 import modules.DirectionFinderListener;
 import modules.Route;
@@ -170,17 +182,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             else if (transportation.equals("parknride")) {
 
-                try {
-
-                    GeoJsonLayer layer = new GeoJsonLayer(getMap(), R.raw.stat_incitatifs, this);
-                    String closestParking = getClosestParking(origin, layer);
-                    new DirectionFinder(this, origin, closestParking, "driving").execute();
-
-                } catch (IOException e) {
-                    Log.e(mLogTag, "GeoJSON file could not be read");
-                } catch (JSONException e) {
-                    Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
-                }
+                new DirectionFinder(this, origin, origin, "driving").execute();
             }
             else {
                 new DirectionFinder(this, origin, destination, transportation).execute();
@@ -235,8 +237,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             GeoJsonPointStyle pointStyle = new GeoJsonPointStyle();
 
             pointStyle.setIcon(pointIcon);
-            pointStyle.setTitle("Stationnement " + feature.getProperty(("NOM_STAT")));
-            pointStyle.setSnippet(Integer.parseInt(feature.getProperty("STAT_REG"))+ " total parking spots");
+            pointStyle.setTitle(feature.getProperty(("NOM_STAT")));
+            pointStyle.setSnippet(Integer.parseInt(feature.getProperty("STAT_REG")) + " total parking spots, " +
+                    Integer.parseInt(feature.getProperty("STAT_VELO")) + " total bike parking spots");
             feature.setPointStyle(pointStyle);
         }
     }
@@ -244,8 +247,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onDirectionFinderStart() {
-        progressDialog = ProgressDialog.show(this, "Please wait.",
-                "Finding direction..!", true);
+        progressDialog = ProgressDialog.show(this, "Please wait",
+                "Computing Directions", true);
 
         if (transportation != "parknride") {
 
@@ -254,6 +257,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for (Marker marker : originMarkers) {
                     marker.remove();
                     getMap().clear();
+                    try {
+                        GeoJsonLayer layer = new GeoJsonLayer(getMap(), R.raw.stat_incitatifs, this);
+                        customizeMarkers(layer);
+                        layer.addLayerToMap();
+                    } catch (IOException e) {
+                        Log.e(mLogTag, "GeoJSON file could not be read");
+                    } catch (JSONException e) {
+                        Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+                    }
                 }
             }
 
@@ -261,6 +273,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for (Marker marker : destinationMarkers) {
                     marker.remove();
                     getMap().clear();
+                    try {
+                        GeoJsonLayer layer = new GeoJsonLayer(getMap(), R.raw.stat_incitatifs, this);
+                        customizeMarkers(layer);
+                        layer.addLayerToMap();
+                    } catch (IOException e) {
+                        Log.e(mLogTag, "GeoJSON file could not be read");
+                    } catch (JSONException e) {
+                        Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+                    }
                 }
             }
 
@@ -268,6 +289,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for (Polyline polyline : polylinePaths) {
                     polyline.remove();
                     getMap().clear();
+                    try {
+                        GeoJsonLayer layer = new GeoJsonLayer(getMap(), R.raw.stat_incitatifs, this);
+                        customizeMarkers(layer);
+                        layer.addLayerToMap();
+                    } catch (IOException e) {
+                        Log.e(mLogTag, "GeoJSON file could not be read");
+                    } catch (JSONException e) {
+                        Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+                    }
                 }
             }
         }
@@ -293,31 +323,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
-        if (transportation.equals("parknride")) {
-
-            try {
-                GeoJsonLayer layer = new GeoJsonLayer(getMap(), R.raw.stat_incitatifs, this);
-                new DirectionFinder(this, getClosestParking(etOrigin.getText().toString(), layer), etDestination.getText().toString(), "transit").execute();
-                transportation = "transit";
-            } catch (IOException e) {
-                Log.e(mLogTag, "GeoJSON file could not be read");
-            } catch (JSONException e) {
-                Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
-            }
-        }
-
-        /* Check if routes were found */
-        if(routes.isEmpty()) {
-            Toast.makeText(this, "No routes were found between the entered origin and destination", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         Route timeRoute = routes.get(0);
         Route distRoute = routes.get(0);
         int duration = timeRoute.duration.value;
         int distance = distRoute.distance.value;
         Log.d("parkpal", "Number of routes returned: " + routes.size());
-        for (Route route : routes){
+        for (Route route : routes) {
             if(duration > route.duration.value) {
                 duration = route.duration.value;
                 timeRoute = route;
@@ -328,6 +339,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
         }
+
+        if (transportation.equals("parknride")) {
+
+            double latA = routes.get(0).startLocation.latitude;
+            double lngA = routes.get(0).startLocation.longitude;
+            try {
+                GeoJsonLayer layer = new GeoJsonLayer(getMap(), R.raw.stat_incitatifs, this);
+                String closestParking = getClosestParking(latA, lngA, layer);
+                if (distRoute.distance.value == 0) {
+                    new DirectionFinder(this, etOrigin.getText().toString(), closestParking, "driving").execute();
+                }
+
+                else {
+                    new DirectionFinder(this, closestParking, etDestination.getText().toString(), "transit").execute();
+                    transportation = "transit";
+                }
+
+            } catch (IOException e) {
+                Log.e(mLogTag, "GeoJSON file could not be read");
+            } catch (JSONException e) {
+                Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+            }
+        }
+
+
+        if (distRoute.distance.value == 0) {
+            double latA = routes.get(0).startLocation.latitude;
+            double lngA = routes.get(0).startLocation.longitude;
+            try {
+                GeoJsonLayer layer = new GeoJsonLayer(getMap(), R.raw.stat_incitatifs, this);
+                String closestParking = getClosestParking(latA, lngA, layer);
+            } catch (IOException e) {
+                Log.e(mLogTag, "GeoJSON file could not be read");
+            } catch (JSONException e) {
+                Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+            }
+
+        }
+
+        /* Check if routes were found */
+        if(routes.isEmpty()) {
+            Toast.makeText(this, "No routes were found between the entered origin and destination", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
 
         drawRoute(getSelectedRoute(timeRoute, distRoute));
 
@@ -365,8 +421,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void drawRoute(Route route) {
         if(route.containsBar && transportation.equals("driving")){
-            Toast.makeText(this, "Warning! Dont Drink and drive! You can continue driving if you are sober. Otherwise, please use the provided Transit or Uber directions!", Toast.LENGTH_SHORT).show();
-
+            Toast.makeText(this, "Warning! Don't Drink and drive! You can continue driving if you are sober. Otherwise, please use the provided Transit or Uber directions!", Toast.LENGTH_LONG).show();
         }
         polylinePaths = new ArrayList<>();
         originMarkers = new ArrayList<>();
@@ -399,59 +454,59 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return mMap;
     }
 
-    public String getClosestParking(String locationA, GeoJsonLayer layer) {
+    public String getClosestParking(double latA, double lngA, GeoJsonLayer layer) {
 
-        Geocoder gc = new Geocoder(this);
+        Geocoder gc = new Geocoder(this, Locale.getDefault());
         float minDistance = -1;
         String closestParking = null;
-        double latA = 0.0;
-        double lngA = 0.0;
         double latB;
         double lngB;
 
-        /*List<Address> list;
-
-
-        try {
+        /*try {
 
             list = gc.getFromLocationName(locationA, 1);
 
-            if (list == null) {
-                return null;
+            if (gc.isPresent()) {
+
+                while (list.size() == 0) {
+                    list = gc.getFromLocationName(locationA, 1);
+                }
+                if (list.size() > 0) {
+                    Address address = list.get(0);
+                    latA = address.getLatitude();
+                    lngA = address.getLongitude();
+                }
             }
-            while (list.size() == 0) {
-                list = gc.getFromLocationName(locationA, 1);
+            else{
+                System.out.println("wsuppppppppppp");
             }
-            if (list.size() > 0) {
-                Address address = list.get(0);
-                latA = address.getLatitude();
-                lngA = address.getLongitude();
-            }
-                  catch (IOException ex) {
+
+        }
+            catch (IOException ex) {
             ex.printStackTrace();
         }
-         */
+        */
             for (GeoJsonFeature feature : layer.getFeatures()) {
 
                 latB = Double.parseDouble(feature.getProperty("LATITUDE"));
                 lngB = Double.parseDouble(feature.getProperty("LONGITUDE"));
 
                 float[] results = new float[1];
-                Location.distanceBetween(45.577058, -73.759869, latB, lngB, results);
+                Location.distanceBetween(latA, lngA, latB, lngB, results);
                 float distance = results[0];
 
-                System.out.println(feature.getProperty("NOM_STAT") + "          " + distance);
 
                 if (minDistance == -1 || distance < minDistance) {
                     minDistance = distance;
                     closestParking = feature.getProperty("NOM_STAT");
-                    System.out.println(closestParking + "                        " + minDistance);
                 }
 
             }
 
             return closestParking;
     }
+
+
     public void addString(String s) {
         if (history == null) {
             history = new ArrayList<String>();

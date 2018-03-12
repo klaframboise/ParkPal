@@ -123,6 +123,9 @@ public class DirectionFinder {
             route.startLocationTypes=aTypes;
             if(containsBar==true) route.containsBar=true;
             routes.add(route);
+            if (route.startAddress == route.endAddress) {
+
+            }
         }
 
         listener.onDirectionFinderSuccess(routes);
