@@ -163,18 +163,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String origin = etOrigin.getText().toString();
         String destination = etDestination.getText().toString();
 
-        // If origin text box is left blank
-        if (origin.isEmpty()) {
-            Toast.makeText(this, "Please enter your current location", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // If destination text box is left blank
-        if (destination.isEmpty()) {
-            Toast.makeText(this, "Please enter your destination", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         try {
             if (transportation.equals("uber")) {
                 Log.d("parkpal", "Starting direction finder with driving");
@@ -190,7 +178,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-    }
+
+        // If origin text box is left blank
+        //if (origin.isEmpty()) {
+            //Toast.makeText(this, "Please enter your current location", Toast.LENGTH_SHORT).show();
+            //return;
+        //}
+
+        // If destination text box is left blank
+        //if (destination.isEmpty()) {
+            //Toast.makeText(this, "Please enter your destination", Toast.LENGTH_SHORT).show();
+            //return;
+        }
+
 
 
     /**

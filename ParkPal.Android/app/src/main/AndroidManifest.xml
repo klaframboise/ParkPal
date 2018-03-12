@@ -21,11 +21,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-<<<<<<< HEAD
-        <uses-library android:name="com.google.android.maps"/>
-=======
 
->>>>>>> e95fcdfbdbe97c26d2dc410aaf17fad519903ef9
+        <uses-library android:name="com.google.android.maps"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
