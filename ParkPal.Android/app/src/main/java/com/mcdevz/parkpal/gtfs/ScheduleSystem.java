@@ -3,6 +3,7 @@ package com.mcdevz.parkpal.gtfs;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Process;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -72,6 +73,7 @@ public class ScheduleSystem {
 
         @Override
         protected Integer doInBackground(GTFSDirectory... gtfsDirectories) {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND + Process.THREAD_PRIORITY_MORE_FAVORABLE);
             int count = gtfsDirectories.length;
             long start = System.currentTimeMillis();
             MyProgressListener listener = new MyProgressListener();
