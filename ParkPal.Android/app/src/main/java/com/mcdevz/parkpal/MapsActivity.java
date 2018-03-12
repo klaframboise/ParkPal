@@ -1,9 +1,15 @@
 package com.mcdevz.parkpal;
 
+
 import android.content.Intent;
-import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
+import android.content.SharedPreferences;
+import android.location.Location;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -16,8 +22,10 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -26,6 +34,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -34,9 +43,15 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.mcdevz.parkpal.gtfs.GTFSDownloadHelper;
 import com.mcdevz.parkpal.gtfs.ScheduleSystem;
+import com.google.maps.android.data.Feature;
+import com.google.maps.android.data.geojson.GeoJsonFeature;
+import com.google.maps.android.data.geojson.GeoJsonLayer;
+import com.google.maps.android.data.geojson.GeoJsonPointStyle;
 import com.mcdevz.parkpal.uber.UberAPIController;
+import com.reginald.editspinner.EditSpinner;
+import org.json.JSONException;
 
-import java.io.Serializable;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,29 +69,49 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Marker> originMarkers;
     private List<Marker> destinationMarkers;
     private List<Polyline> polylinePaths;
-    private EditText etOrigin;
-    private EditText etDestination;
+   // private View view;
+    private EditSpinner etOrigin;
+    private EditSpinner etDestination;
     private ProgressDialog progressDialog;
+    private final static String mLogTag = "GeoJson";
+    private ArrayList<String> history;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        if (history == null) {
+            history = new ArrayList<String>();
+        }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        try {
+            history = (ArrayList<String>) ObjectSerializer.deserialize(prefs.getString("HISTORY", ObjectSerializer.serialize(new ArrayList<String>())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         btnGo = (Button) findViewById(R.id.btnGo);
-        etOrigin = (EditText) findViewById(R.id.etOrigin);
-        etDestination = (EditText) findViewById(R.id.etDestination);
+        etOrigin = (EditSpinner) findViewById(R.id.etOrigin);
+        etDestination = (EditSpinner) findViewById(R.id.etDestination);
         transGroup = (RadioGroup) findViewById(R.id.transGroup);
         btnTrans = (RadioButton) findViewById(transGroup.getCheckedRadioButtonId());
         transportation = btnTrans.getText().toString();
+        ListAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,
+                history);
+        etOrigin.setAdapter(adapter);
+        etDestination.setAdapter(adapter);
 
         btnGo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                addString(etDestination.getText().toString());
+                addString(etOrigin.getText().toString());
                 Log.d("parkpal", "transportation mode on Go click: " + transportation);
                 sendRequest();
             }
@@ -133,6 +168,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     transportation = "uber";
                 }
                 break;
+            case R.id.radioParknride:
+                if (checked) {
+                    transportation = "parknride";
+                }
         }
     }
 
@@ -154,9 +193,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         try {
-            if(transportation.equals("uber")) {
+            if (transportation.equals("uber")) {
                 Log.d("parkpal", "Starting direction finder with driving");
                 new DirectionFinder(this, origin, destination, "driving").execute();
+            }
+            else if (transportation.equals("parknride")) {
+
+                try {
+
+                    GeoJsonLayer layer = new GeoJsonLayer(getMap(), R.raw.stat_incitatifs, this);
+                    String closestParking = getClosestParking(origin, layer);
+                    new DirectionFinder(this, origin, closestParking, "driving").execute();
+
+                } catch (IOException e) {
+                    Log.e(mLogTag, "GeoJSON file could not be read");
+                } catch (JSONException e) {
+                    Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+                }
             }
             else {
                 new DirectionFinder(this, origin, destination, transportation).execute();
@@ -180,10 +233,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng mcgill = new LatLng(45.505050, -73.577154);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(mcgill));
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+        // Add a marker in Montreal and move the camera, changed from the original Sydney location
+        LatLng MTL = new LatLng(45.5, -73.57);
+        mMap.addMarker(new MarkerOptions().position(MTL).title("Marker in MTL"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(MTL));
+
+        try {
+            GeoJsonLayer layer = new GeoJsonLayer(getMap(), R.raw.stat_incitatifs, this);
+            customizeMarkers(layer);
+            layer.addLayerToMap();
+        } catch (IOException e) {
+            Log.e(mLogTag, "GeoJSON file could not be read");
+        } catch (JSONException e) {
+            Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+        }
 
         // Checking if all the required permissions are enabled in the Android Manifest file
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -192,26 +255,49 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMyLocationEnabled(true);
     }
 
+    public void customizeMarkers(GeoJsonLayer layer) {
+
+        for (GeoJsonFeature feature : layer.getFeatures()) {
+
+            BitmapDescriptor pointIcon = BitmapDescriptorFactory.defaultMarker();
+
+            GeoJsonPointStyle pointStyle = new GeoJsonPointStyle();
+
+            pointStyle.setIcon(pointIcon);
+            pointStyle.setTitle("Stationnement " + feature.getProperty(("NOM_STAT")));
+            pointStyle.setSnippet(Integer.parseInt(feature.getProperty("STAT_REG"))+ " total parking spots");
+            feature.setPointStyle(pointStyle);
+        }
+    }
+
+
     @Override
     public void onDirectionFinderStart() {
         progressDialog = ProgressDialog.show(this, "Please wait.",
                 "Finding direction..!", true);
 
-        if (originMarkers != null) {
-            for (Marker marker : originMarkers) {
-                marker.remove();
-            }
-        }
+        if (transportation != "parknride") {
 
-        if (destinationMarkers != null) {
-            for (Marker marker : destinationMarkers) {
-                marker.remove();
-            }
-        }
 
-        if (polylinePaths != null) {
-            for (Polyline polyline:polylinePaths ) {
-                polyline.remove();
+            if (originMarkers != null) {
+                for (Marker marker : originMarkers) {
+                    marker.remove();
+                    getMap().clear();
+                }
+            }
+
+            if (destinationMarkers != null) {
+                for (Marker marker : destinationMarkers) {
+                    marker.remove();
+                    getMap().clear();
+                }
+            }
+
+            if (polylinePaths != null) {
+                for (Polyline polyline : polylinePaths) {
+                    polyline.remove();
+                    getMap().clear();
+                }
             }
         }
     }
@@ -235,6 +321,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
 
+
+        if (transportation.equals("parknride")) {
+
+            try {
+                GeoJsonLayer layer = new GeoJsonLayer(getMap(), R.raw.stat_incitatifs, this);
+                new DirectionFinder(this, getClosestParking(etOrigin.getText().toString(), layer), etDestination.getText().toString(), "transit").execute();
+                transportation = "transit";
+            } catch (IOException e) {
+                Log.e(mLogTag, "GeoJSON file could not be read");
+            } catch (JSONException e) {
+                Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+            }
+        }
+
         /* Check if routes were found */
         if(routes.isEmpty()) {
             Toast.makeText(this, "No routes were found between the entered origin and destination", Toast.LENGTH_SHORT).show();
@@ -247,12 +347,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int distance = distRoute.distance.value;
         Log.d("parkpal", "Number of routes returned: " + routes.size());
         for (Route route : routes){
-
             if(duration > route.duration.value) {
                 duration = route.duration.value;
                 timeRoute = route;
             }
-
             if(distance > route.distance.value) {
                 distance = route.distance.value;
                 distRoute = route;
@@ -295,6 +393,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @param route
      */
     private void drawRoute(Route route) {
+        if(route.containsBar && transportation.equals("driving")){
+            Toast.makeText(this, "Warning! Dont Drink and drive! You can continue driving if you are sober. Otherwise, please use the provided Transit or Uber directions!", Toast.LENGTH_SHORT).show();
+
+        }
         polylinePaths = new ArrayList<>();
         originMarkers = new ArrayList<>();
         destinationMarkers = new ArrayList<>();
@@ -321,6 +423,81 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         polylinePaths.add(mMap.addPolyline(polylineOptions));
     }
+
+    protected GoogleMap getMap() {
+        return mMap;
+    }
+
+    public String getClosestParking(String locationA, GeoJsonLayer layer) {
+
+        Geocoder gc = new Geocoder(this);
+        float minDistance = -1;
+        String closestParking = null;
+        double latA = 0.0;
+        double lngA = 0.0;
+        double latB;
+        double lngB;
+
+        /*List<Address> list;
+
+
+        try {
+
+            list = gc.getFromLocationName(locationA, 1);
+
+            if (list == null) {
+                return null;
+            }
+            while (list.size() == 0) {
+                list = gc.getFromLocationName(locationA, 1);
+            }
+            if (list.size() > 0) {
+                Address address = list.get(0);
+                latA = address.getLatitude();
+                lngA = address.getLongitude();
+            }
+                  catch (IOException ex) {
+            ex.printStackTrace();
+        }
+         */
+            for (GeoJsonFeature feature : layer.getFeatures()) {
+
+                latB = Double.parseDouble(feature.getProperty("LATITUDE"));
+                lngB = Double.parseDouble(feature.getProperty("LONGITUDE"));
+
+                float[] results = new float[1];
+                Location.distanceBetween(45.577058, -73.759869, latB, lngB, results);
+                float distance = results[0];
+
+                System.out.println(feature.getProperty("NOM_STAT") + "          " + distance);
+
+                if (minDistance == -1 || distance < minDistance) {
+                    minDistance = distance;
+                    closestParking = feature.getProperty("NOM_STAT");
+                    System.out.println(closestParking + "                        " + minDistance);
+                }
+
+            }
+
+            return closestParking;
+    }
+    public void addString(String s) {
+        if (history == null) {
+            history = new ArrayList<String>();
+        }
+        history.add(s);
+
+        // save the task list to preference
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        try {
+            editor.putString("HISTORY", ObjectSerializer.serialize(history));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        editor.commit();
+    }
+
 }
 
 

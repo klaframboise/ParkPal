@@ -1,7 +1,16 @@
 package modules;
 
+import android.app.Activity;
+import android.location.Location;
+import android.location.Geocoder;
+import android.location.Address;
 import android.os.AsyncTask;
+import android.content.Context;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.data.geojson.GeoJsonFeature;
+import com.google.maps.android.data.geojson.GeoJsonLayer;
+import com.mcdevz.parkpal.MapsActivity;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,7 +49,6 @@ public class DirectionFinder {
         String urlOrigin = URLEncoder.encode(origin, "utf-8");
         String urlDestination = URLEncoder.encode(destination, "utf-8");
         String urlTransportation = URLEncoder.encode(transportation, "utf-8");
-
 
         return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination+ "&mode="+ urlTransportation + "&alternatives=true&key=" + GOOGLE_API_KEY;
     }
@@ -84,10 +92,15 @@ public class DirectionFinder {
     private void parseJSon(String data) throws JSONException {
         if (data == null)
             return;
-
+        boolean containsBar=false;
         List<Route> routes = new ArrayList<Route>();
         JSONObject jsonData = new JSONObject(data);
         JSONArray jsonRoutes = jsonData.getJSONArray("routes");
+        JSONArray jsonGeoCodedWaypoints = jsonData.getJSONArray("geocoded_waypoints");
+        JSONObject jsonOriginGWType = jsonGeoCodedWaypoints.getJSONObject(0);
+        List<String> aTypes=getStringListFromJsonArray(jsonOriginGWType.getJSONArray("types"));
+        if(aTypes.contains("bar")) containsBar=true;
+
         for (int i = 0; i < jsonRoutes.length(); i++) {
             JSONObject jsonRoute = jsonRoutes.getJSONObject(i);
             Route route = new Route();
@@ -107,13 +120,13 @@ public class DirectionFinder {
             route.startLocation = new LatLng(jsonStartLocation.getDouble("lat"), jsonStartLocation.getDouble("lng"));
             route.endLocation = new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng"));
             route.points = decodePolyLine(overview_polylineJson.getString("points"));
-
+            route.startLocationTypes=aTypes;
+            if(containsBar==true) route.containsBar=true;
             routes.add(route);
         }
 
         listener.onDirectionFinderSuccess(routes);
     }
-
     private List<LatLng> decodePolyLine(final String poly) {
         int len = poly.length();
         int index = 0;
@@ -149,5 +162,26 @@ public class DirectionFinder {
         }
 
         return decoded;
+    }
+
+
+    private boolean checkifBar(Route route, List<String> types) throws UnsupportedEncodingException {
+        for(String type: types) {
+            if (route.travelMode.equalsIgnoreCase("Driving") && type.equalsIgnoreCase("bar")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    public static List<String> getStringListFromJsonArray(JSONArray jArray) throws JSONException {
+        List<String> returnList = new ArrayList<String>();
+        for (int i = 0; i < jArray.length(); i++) {
+            String val = jArray.getString(i);
+            returnList.add(val);
+        }
+        return returnList;
     }
 }
