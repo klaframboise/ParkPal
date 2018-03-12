@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 import { log } from 'util';
+import { } from '@types/googlemaps';
 
 declare const google: any;
 
@@ -20,6 +21,8 @@ export class MapComponent implements OnInit {
   routePreference: string;
 
   map:any;
+  directionsService: google.maps.DirectionsService;
+  directionsDisplay: google.maps.DirectionsRenderer;
 
   check(directionTrue:number){
     if(this.directionTrue==1){
@@ -33,20 +36,20 @@ export class MapComponent implements OnInit {
  
   constructor(private data: DataService) { }
 
-
-
   findDirection(){
     console.log("Finding Route to: "+this.origin+this.methodOfTransp)
     let mapProp = {
       mapTypeId: google.maps.MapTypeId.ROADMAP
   };
-    
+    document.getElementById("routeoptions");	
+    document.getElementById("routeoptions").innerHTML = "";
+
     let directionsPanel = document.getElementById("routeoptions");
 
-    let directionsDisplay = new google.maps.DirectionsRenderer();
-    let directionsService = new google.maps.DirectionsService();
+    
 
-    directionsDisplay.setPanel(directionsPanel);
+    
+    this.directionsDisplay.setPanel(directionsPanel);
 
     let start = this.origin;
     let end = this.destination;
@@ -56,11 +59,11 @@ export class MapComponent implements OnInit {
     var request = {
       origin: start,
       destination: end,
-      travelMode: transport,
+      travelMode: google.maps.TravelMode[transport],
       provideRouteAlternatives: true
     };
-    directionsService.route(request, function(result, status){
-      if (status == 'OK') {
+    this.directionsService.route(request, (result, status) => {
+      if (status == google.maps.DirectionsStatus.OK) {
         // below, finding shortest distance for driving mode of transport
         if (transport == 'DRIVING' && preference == 'SHORTEST') {
             var shortestDist = result.routes[0].legs[0].distance.value;
@@ -81,20 +84,18 @@ export class MapComponent implements OnInit {
           result.routes.length = 0;
           result.routes.push(fastestRoute);
         }
-        directionsDisplay.setDirections(result);
-      } else if (status == 'ZERO_RESULTS') {
-        directionsDisplay.setDirections({routes:[]}); /** This doesnt work */
+        this.directionsDisplay.setDirections(result);
+      } else if (google.maps.DirectionsStatus == 'ZERO_RESULTS') {
+        // this.directionsDisplay.setDirections(null);
         console.log("impossible");
         document.getElementById("routeoptions").innerHTML = "Cannot get directions with the current mode of transportation"
       }
       else {
-        directionsDisplay.setDirections(null); /** This doesnt work either */
         console.log("misspelled");
         document.getElementById("routeoptions").innerHTML = "Invalid Destination or Current Location"
       }
     })
   }
-
 
 
   ngOnInit() {
@@ -105,11 +106,22 @@ export class MapComponent implements OnInit {
         mapTypeId: google.maps.MapTypeId.ROADMAP
     };
 
+    this.directionsDisplay = new google.maps.DirectionsRenderer;
+    this.directionsService = new google.maps.DirectionsService;
     this.map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+    this.directionsDisplay.setMap(this.map);
+
     this.data.currentOrigin.subscribe(origin => this.origin=origin)   
     this.data.currentDestination.subscribe(destination => this.destination=destination) 
     this.data.currentNumber.subscribe(directionTrue => this.directionTrue=directionTrue)
     this.data.currentTransport.subscribe(transport => this.methodOfTransp = transport)
     this.data.currentRoutePref.subscribe(routePref => this.routePreference = routePref)
+
+    var inputFrom = document.getElementById('from');
+    var inputTo = document.getElementById('to');
+    var autocompleteFrom = new google.maps.places.Autocomplete(inputFrom);
+    var autocompleteTo = new google.maps.places.Autocomplete(inputTo);
+    autocompleteFrom.bindTo('bounds', this.map);
+    autocompleteTo.bindTo('bounds', this.map);
   }
 }

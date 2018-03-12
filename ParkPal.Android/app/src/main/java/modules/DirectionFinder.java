@@ -6,6 +6,8 @@ import android.location.Geocoder;
 import android.location.Address;
 import android.os.AsyncTask;
 import android.content.Context;
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.data.geojson.GeoJsonFeature;
 import com.google.maps.android.data.geojson.GeoJsonLayer;
@@ -28,6 +30,7 @@ import java.util.List;
 public class DirectionFinder {
     private static final String DIRECTION_URL_API = "https://maps.googleapis.com/maps/api/directions/json?";
     private static final String GOOGLE_API_KEY = "AIzaSyBPrQwf_NvAibI1MCgIR6fQiPMRYkWIM3U";
+    private static final String TAG = "parkpal/DFinder";
     private DirectionFinderListener listener;
     private String origin;
     private String destination;
@@ -57,6 +60,7 @@ public class DirectionFinder {
 
         @Override
         protected String doInBackground(String... params) {
+            Log.d(TAG, "Downloading Raw Data...");
             String link = params[0];
             try {
                 URL url = new URL(link);
@@ -90,6 +94,7 @@ public class DirectionFinder {
     }
 
     private void parseJSon(String data) throws JSONException {
+        Log.d(TAG, "parseJSon called.");
         if (data == null)
             return;
         boolean containsBar=false;
@@ -170,6 +175,7 @@ public class DirectionFinder {
 
     private boolean checkifBar(Route route, List<String> types) throws UnsupportedEncodingException {
         for(String type: types) {
+            Log.d(TAG, "Check if bar: " + type);
             if (route.travelMode.equalsIgnoreCase("Driving") && type.equalsIgnoreCase("bar")) {
                 return true;
             }
@@ -182,6 +188,7 @@ public class DirectionFinder {
     public static List<String> getStringListFromJsonArray(JSONArray jArray) throws JSONException {
         List<String> returnList = new ArrayList<String>();
         for (int i = 0; i < jArray.length(); i++) {
+            Log.d(TAG, "Getting string list from array");
             String val = jArray.getString(i);
             returnList.add(val);
         }
