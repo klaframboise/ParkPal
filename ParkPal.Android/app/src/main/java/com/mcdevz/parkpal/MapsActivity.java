@@ -1,5 +1,9 @@
 package com.mcdevz.parkpal;
 
+
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -37,13 +41,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.mcdevz.parkpal.gtfs.GTFSDownloadHelper;
+import com.mcdevz.parkpal.gtfs.ScheduleSystem;
 import com.google.maps.android.data.Feature;
 import com.google.maps.android.data.geojson.GeoJsonFeature;
 import com.google.maps.android.data.geojson.GeoJsonLayer;
 import com.google.maps.android.data.geojson.GeoJsonPointStyle;
 import com.mcdevz.parkpal.uber.UberAPIController;
 import com.reginald.editspinner.EditSpinner;
-
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -111,6 +116,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 sendRequest();
             }
         });
+
+        if(!isNetworkAvailable()) {
+            Toast.makeText(this, R.string.offline_msg, Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, ScheduleBrowser.class);
+            startActivity(intent);
+        }
+        else if(ScheduleSystem.gtfsDownloadNeeded(this)) {
+            ScheduleSystem.downloadFeeds(this);
+        }
+    }
+
+    /**
+     * Checks if network is available.
+     * @return true if connected through either wifi or lte
+     */
+    private boolean isNetworkAvailable() {
+
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getSystemService(this.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
     }
 
 

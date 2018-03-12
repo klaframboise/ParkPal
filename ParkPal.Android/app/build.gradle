@@ -4,7 +4,7 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.mcdevz.parkpal"
-        minSdkVersion 21
+        minSdkVersion 26
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -16,15 +16,32 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.google.android.gms:play-services-maps:8.4.0'
-    compile 'com.google.maps.android:android-maps-utils:0.5+'
+
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    //GTFSParser dependencies
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-csv
+    compile 'org.apache.commons:commons-csv:1.5'
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    compile 'commons-io:commons-io:2.6'
+    // https://mvnrepository.com/artifact/com.cedarsoftware/json-io
+    compile 'com.cedarsoftware:json-io:4.10.0'
+    // https://mvnrepository.com/artifact/org.reflections/reflections
+    compile 'org.reflections:reflections:0.9.11'
+    
+    compile 'com.google.maps.android:android-maps-utils:0.5+'
     compile 'com.reginald:editspinner:1.0.0'
+    
+    implementation files('libs/GTFSParser.jar')
+    
 }
+
