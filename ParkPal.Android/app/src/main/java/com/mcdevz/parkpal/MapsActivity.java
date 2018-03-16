@@ -1,13 +1,12 @@
 package com.mcdevz.parkpal;
 
-import android.content.Context;
-import android.location.Address;
+import android.content.Intent;
 import android.location.Geocoder;
 import android.content.SharedPreferences;
 import android.location.Location;
-import android.os.AsyncTask;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.Manifest;
@@ -15,13 +14,10 @@ import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -38,29 +34,20 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.data.Feature;
 import com.google.maps.android.data.geojson.GeoJsonFeature;
 import com.google.maps.android.data.geojson.GeoJsonLayer;
 import com.google.maps.android.data.geojson.GeoJsonPointStyle;
+import com.mcdevz.parkpal.gtfs.ScheduleSystem;
 import com.mcdevz.parkpal.uber.UberAPIController;
 import com.reginald.editspinner.EditSpinner;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import modules.DirectionFinder;
 import modules.DirectionFinderListener;
@@ -80,49 +67,82 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private EditSpinner etOrigin;
     private EditSpinner etDestination;
     private ProgressDialog progressDialog;
-    private final static String mLogTag = "GeoJson";
+    private final static String TAG = "parkpal/MActivity";
     private ArrayList<String> history;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
-        if (history == null) {
-            history = new ArrayList<String>();
-        }
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        try {
-            history = (ArrayList<String>) ObjectSerializer.deserialize(prefs.getString("HISTORY", ObjectSerializer.serialize(new ArrayList<String>())));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
 
-        btnGo = (Button) findViewById(R.id.btnGo);
-        etOrigin = (EditSpinner) findViewById(R.id.etOrigin);
-        etDestination = (EditSpinner) findViewById(R.id.etDestination);
-        transGroup = (RadioGroup) findViewById(R.id.transGroup);
-        btnTrans = (RadioButton) findViewById(transGroup.getCheckedRadioButtonId());
-        transportation = btnTrans.getText().toString();
-        ListAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,
-                history);
-        etOrigin.setAdapter(adapter);
-        etDestination.setAdapter(adapter);
+        if(!isNetworkAvailable()) {
+            Toast.makeText(this, R.string.offline_msg, Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, ScheduleBrowser.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        }
 
-        btnGo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addString(etDestination.getText().toString());
-                addString(etOrigin.getText().toString());
-                Log.d("parkpal", "transportation mode on Go click: " + transportation);
-                sendRequest();
+        else {
+
+            Log.d(TAG, "Building main activity");
+            ScheduleSystem.downloadFeeds(this);
+
+            setContentView(R.layout.activity_maps);
+            if (history == null) {
+                history = new ArrayList<String>();
             }
-        });
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            try {
+                history = (ArrayList<String>) ObjectSerializer.deserialize(prefs.getString("HISTORY", ObjectSerializer.serialize(new ArrayList<String>())));
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+
+            btnGo = (Button) findViewById(R.id.btnGo);
+            etOrigin = (EditSpinner) findViewById(R.id.etOrigin);
+            etDestination = (EditSpinner) findViewById(R.id.etDestination);
+            transGroup = (RadioGroup) findViewById(R.id.transGroup);
+            btnTrans = (RadioButton) findViewById(transGroup.getCheckedRadioButtonId());
+            transportation = btnTrans.getText().toString();
+            ListAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,
+                    history);
+            etOrigin.setAdapter(adapter);
+            etDestination.setAdapter(adapter);
+
+            btnGo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    addString(etDestination.getText().toString());
+                    addString(etOrigin.getText().toString());
+                    Log.d("parkpal", "transportation mode on Go click: " + transportation);
+                    sendRequest();
+                }
+            });
+        }
+    }
+
+    /**
+     * Checks if network is available.
+     * @return true if connected through either wifi or lte
+     */
+    private boolean isNetworkAvailable() {
+
+        Log.d(TAG, "Checking if network is available");
+
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getSystemService(this.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
     }
 
 
@@ -216,9 +236,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             customizeMarkers(layer);
             layer.addLayerToMap();
         } catch (IOException e) {
-            Log.e(mLogTag, "GeoJSON file could not be read");
+            Log.e(TAG, "GeoJSON file could not be read");
         } catch (JSONException e) {
-            Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+            Log.e(TAG, "GeoJSON file could not be converted to a JSONObject");
         }
 
         // Checking if all the required permissions are enabled in the Android Manifest file
@@ -250,6 +270,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         progressDialog = ProgressDialog.show(this, "Please wait",
                 "Computing Directions", true);
 
+        //TODO remove if causing issues
+        getMap().clear();
         if (transportation != "parknride") {
 
 
@@ -262,9 +284,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         customizeMarkers(layer);
                         layer.addLayerToMap();
                     } catch (IOException e) {
-                        Log.e(mLogTag, "GeoJSON file could not be read");
+                        Log.e(TAG, "GeoJSON file could not be read");
                     } catch (JSONException e) {
-                        Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+                        Log.e(TAG, "GeoJSON file could not be converted to a JSONObject");
                     }
                 }
             }
@@ -278,9 +300,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         customizeMarkers(layer);
                         layer.addLayerToMap();
                     } catch (IOException e) {
-                        Log.e(mLogTag, "GeoJSON file could not be read");
+                        Log.e(TAG, "GeoJSON file could not be read");
                     } catch (JSONException e) {
-                        Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+                        Log.e(TAG, "GeoJSON file could not be converted to a JSONObject");
                     }
                 }
             }
@@ -294,9 +316,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         customizeMarkers(layer);
                         layer.addLayerToMap();
                     } catch (IOException e) {
-                        Log.e(mLogTag, "GeoJSON file could not be read");
+                        Log.e(TAG, "GeoJSON file could not be read");
                     } catch (JSONException e) {
-                        Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+                        Log.e(TAG, "GeoJSON file could not be converted to a JSONObject");
                     }
                 }
             }
@@ -357,9 +379,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
             } catch (IOException e) {
-                Log.e(mLogTag, "GeoJSON file could not be read");
+                Log.e(TAG, "GeoJSON file could not be read");
             } catch (JSONException e) {
-                Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+                Log.e(TAG, "GeoJSON file could not be converted to a JSONObject");
             }
         }
 
@@ -371,9 +393,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 GeoJsonLayer layer = new GeoJsonLayer(getMap(), R.raw.stat_incitatifs, this);
                 String closestParking = getClosestParking(latA, lngA, layer);
             } catch (IOException e) {
-                Log.e(mLogTag, "GeoJSON file could not be read");
+                Log.e(TAG, "GeoJSON file could not be read");
             } catch (JSONException e) {
-                Log.e(mLogTag, "GeoJSON file could not be converted to a JSONObject");
+                Log.e(TAG, "GeoJSON file could not be converted to a JSONObject");
             }
 
         }
