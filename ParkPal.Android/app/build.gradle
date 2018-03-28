@@ -30,16 +30,16 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     //GTFSParser dependencies
     // https://mvnrepository.com/artifact/org.apache.commons/commons-csv
-    compile 'org.apache.commons:commons-csv:1.5'
+    implementation 'org.apache.commons:commons-csv:1.5'
     // https://mvnrepository.com/artifact/commons-io/commons-io
-    compile 'commons-io:commons-io:2.6'
+    implementation 'commons-io:commons-io:2.6'
     // https://mvnrepository.com/artifact/com.cedarsoftware/json-io
-    compile 'com.cedarsoftware:json-io:4.10.0'
+    implementation 'com.cedarsoftware:json-io:4.10.0'
     // https://mvnrepository.com/artifact/org.reflections/reflections
-    compile 'org.reflections:reflections:0.9.11'
+    implementation 'org.reflections:reflections:0.9.11'
 
-    compile 'com.google.maps.android:android-maps-utils:0.5+'
-    compile 'com.reginald:editspinner:1.0.0'
+    implementation 'com.google.maps.android:android-maps-utils:0.5+'
+    implementation 'com.reginald:editspinner:1.0.0'
 
     implementation files('libs/GTFSParser.jar')
 
