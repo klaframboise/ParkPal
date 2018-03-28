@@ -15,12 +15,13 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DirectionFinder {
-    private static final String DIRECTION_URL_API = "https://maps.googleapis.com/maps/api/com.mcdevz.parkpal.directions/json?";
+    private static final String DIRECTION_URL_API = "https://maps.googleapis.com/maps/api/directions/json?";
     private static final String GOOGLE_API_KEY = "AIzaSyBPrQwf_NvAibI1MCgIR6fQiPMRYkWIM3U";
     private static final String TAG = "parkpal/DFinder";
     private DirectionFinderListener listener;
@@ -54,6 +55,7 @@ public class DirectionFinder {
         protected String doInBackground(String... params) {
             Log.d(TAG, "Downloading Raw Data...");
             String link = params[0];
+            Log.d(TAG, "Downloading from: " + params[0]);
             try {
                 URL url = new URL(link);
                 InputStream is = url.openConnection().getInputStream();
@@ -87,8 +89,10 @@ public class DirectionFinder {
 
     private void parseJSon(String data) throws JSONException {
         Log.d(TAG, "parseJSon called.");
-        if (data == null)
+        if (data == null) {
+            Log.d(TAG, "Data is null.");
             return;
+        }
         boolean containsBar=false;
         List<Route> routes = new ArrayList<Route>();
         JSONObject jsonData = new JSONObject(data);
@@ -98,7 +102,9 @@ public class DirectionFinder {
         List<String> aTypes=getStringListFromJsonArray(jsonOriginGWType.getJSONArray("types"));
         if(aTypes.contains("bar")) containsBar=true;
 
+        Log.d(TAG, "Iterating over " + jsonRoutes + " routes");
         for (int i = 0; i < jsonRoutes.length(); i++) {
+            Log.d(TAG, "Processing route " + i);
             JSONObject jsonRoute = jsonRoutes.getJSONObject(i);
             Route route = new Route();
 
@@ -125,6 +131,7 @@ public class DirectionFinder {
             }
         }
 
+        Log.d(TAG, "Indicating success.");
         listener.onDirectionFinderSuccess(routes);
     }
     private List<LatLng> decodePolyLine(final String poly) {

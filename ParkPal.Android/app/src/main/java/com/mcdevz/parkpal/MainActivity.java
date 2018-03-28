@@ -1,6 +1,7 @@
 package com.mcdevz.parkpal;
 
 import android.Manifest;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +13,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -33,6 +36,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -44,6 +49,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.maps.android.data.geojson.GeoJsonFeature;
 import com.google.maps.android.data.geojson.GeoJsonLayer;
 import com.google.maps.android.data.geojson.GeoJsonPointStyle;
@@ -55,6 +61,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -64,7 +71,8 @@ import com.mcdevz.parkpal.directions.DirectionFinderListener;
 import com.mcdevz.parkpal.directions.Route;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, DirectionFinderListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, DirectionFinderListener,
+        PickupDialogCallback {
 
     private GoogleMap mMap;
     private Button btnGo;
@@ -80,6 +88,11 @@ public class MainActivity extends AppCompatActivity
     private ProgressDialog progressDialog;
     private final static String TAG = "parkpal/MActivity";
     private ArrayList<String> history;
+    private boolean parkedNRode;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private String mLocation;
+
+    private static final int PICKUP_YES_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,16 +119,14 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        if(!isNetworkAvailable()) {
+        if (!isNetworkAvailable()) {
             Toast.makeText(this, R.string.offline_msg, Toast.LENGTH_LONG).show();
             Intent intent = new Intent(this, ScheduleBrowser.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
-        }
-
-        else {
+        } else {
 
             Log.d(TAG, "Building main activity");
             ScheduleSystem.downloadFeeds(this);
@@ -157,7 +168,27 @@ public class MainActivity extends AppCompatActivity
                     sendRequest();
                 }
             });
+
+            // Setup location services
+            mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        /* Check whether to prompt user to go pickup car */
+        readParkNRode();
+        promptForPickup();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        writeParkNRode();
     }
 
     @Override
@@ -195,6 +226,7 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        //TODO side menu code goes here
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -217,6 +249,21 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(requestCode == PICKUP_YES_REQUEST) {
+            if(grantResults[0] != PackageManager.PERMISSION_GRANTED || grantResults[1] != PackageManager.PERMISSION_GRANTED) {
+                mLocation = null;
+                Toast.makeText(this, R.string.location_permission_denied, Toast.LENGTH_SHORT);
+            }
+            else {
+                pickupYes(readLastParking());
+            }
+        }
+    }
+
     /**
      * Checks if network is available.
      * @return true if connected through either wifi or lte
@@ -226,7 +273,7 @@ public class MainActivity extends AppCompatActivity
         Log.d(TAG, "Checking if network is available");
 
         ConnectivityManager cm =
-                (ConnectivityManager)this.getSystemService(this.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) this.getSystemService(this.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
@@ -234,12 +281,85 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Reads whether the last mode of transportation was park n ride from persistence.
+     * Sets the value of the field parkNRode to the read value.
+     */
+    private void readParkNRode() {
+        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        parkedNRode = prefs.getBoolean(getString(R.string.parked_n_rode), false);
+    }
 
-    public void onRadioButtonClicked(View view){
+    /**
+     * Writes the current value of the field parkedNRode to persistence.
+     */
+    private void writeParkNRode() {
+        writeParkNRode(parkedNRode);
+    }
 
-        boolean checked = ((RadioButton)view).isChecked();
+    /**
+     * Writes to persistence the given boolean value for paredkNRode. Also sets the parkNRode field
+     * to the given value.
+     * @param value new value for persistent parkNRode
+     */
+    private void writeParkNRode(boolean value) {
+        this.parkedNRode = value;
+        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(getString(R.string.parked_n_rode), value);
+        editor.apply();
+    }
 
-        switch(view.getId()){
+    /**
+     * Reads the last parking spot from persistence.
+     * @return name of the last parking spot, null if the value was never mapped
+     */
+    private String readLastParking() {
+        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        return prefs.getString(getString(R.string.last_parking), "");
+    }
+
+    /**
+     * Writes the last parking location to persistence.
+     */
+    private void writeLastParking(String parkingName) {
+        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(getString(R.string.last_parking), parkingName);
+        editor.apply();
+    }
+
+    /**
+     * Checks if the last mode of transportation was park n ride before the app was closed.
+     * If so, prompts the user to go pickup their car via transit.
+     */
+    private void promptForPickup() {
+
+        // Do nothing if last mode of transportation was not park n ride
+        if (!parkedNRode) return;
+
+        // Get last parking
+        String lastParking = readLastParking();
+
+        /* Create dialog */
+        PickupDialog pickupDialog = new PickupDialog();
+        Bundle dialogArgs = new Bundle();
+        dialogArgs.putString(PickupDialog.LAST_PARKING, lastParking);
+        pickupDialog.setArguments(dialogArgs);
+        pickupDialog.setCallback(this);
+
+        // Show fragment
+        pickupDialog.show(getFragmentManager(), "pickup");
+
+    }
+
+    public void onRadioButtonClicked(View view) {
+
+        Log.d(TAG, "Radio clicked.");
+
+        boolean checked = ((RadioButton) view).isChecked();
+
+        switch (view.getId()) {
 
             case R.id.radioDrive:
                 if (checked)
@@ -250,11 +370,11 @@ public class MainActivity extends AppCompatActivity
                     transportation = "transit";
                 break;
             case R.id.radioWalk:
-                if(checked)
+                if (checked)
                     transportation = "walking";
                 break;
             case R.id.radioUber:
-                if(checked) {
+                if (checked) {
                     transportation = "uber";
                 }
                 break;
@@ -273,13 +393,13 @@ public class MainActivity extends AppCompatActivity
         try {
             if (transportation.equals("uber")) {
                 Log.d("parkpal", "Starting direction finder with driving");
+                writeParkNRode(false);
                 new DirectionFinder(this, origin, destination, "driving").execute();
-            }
-            else if (transportation.equals("parknride")) {
-
+            } else if (transportation.equals("parknride")) {
+                writeParkNRode(true);
                 new DirectionFinder(this, origin, origin, "driving").execute();
-            }
-            else {
+            } else {
+                writeParkNRode(false);
                 new DirectionFinder(this, origin, destination, transportation).execute();
             }
         } catch (UnsupportedEncodingException e) {
@@ -287,8 +407,6 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
-
-
 
     /**
      * Manipulates the map once available.
@@ -344,6 +462,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onDirectionFinderStart() {
+        Log.d(TAG, "Direction finder start.");
         progressDialog = ProgressDialog.show(this, "Please wait",
                 "Computing Directions", true);
 
@@ -407,7 +526,7 @@ public class MainActivity extends AppCompatActivity
 
         /* Handle Uber requests */
         Log.d("parkpal", "transportation before Uber check: " + transportation);
-        if(transportation.equals("uber")) {
+        if (transportation.equals("uber")) {
             Log.d("parkpal", "Entering Uber subroutine");
             UberAPIController uber = new UberAPIController(getResources().getString(R.string.uber_client_id));
             LatLng origin = new LatLng(routes.get(0).startLocation.latitude, routes.get(0).startLocation.longitude);
@@ -427,11 +546,11 @@ public class MainActivity extends AppCompatActivity
         int distance = distRoute.distance.value;
         Log.d("parkpal", "Number of routes returned: " + routes.size());
         for (Route route : routes) {
-            if(duration > route.duration.value) {
+            if (duration > route.duration.value) {
                 duration = route.duration.value;
                 timeRoute = route;
             }
-            if(distance > route.distance.value) {
+            if (distance > route.distance.value) {
                 distance = route.distance.value;
                 distRoute = route;
             }
@@ -445,11 +564,10 @@ public class MainActivity extends AppCompatActivity
             try {
                 GeoJsonLayer layer = new GeoJsonLayer(getMap(), R.raw.stat_incitatifs, this);
                 String closestParking = getClosestParking(latA, lngA, layer);
+                writeLastParking(closestParking);
                 if (distRoute.distance.value == 0) {
                     new DirectionFinder(this, etOrigin.getText().toString(), closestParking, "driving").execute();
-                }
-
-                else {
+                } else {
                     new DirectionFinder(this, closestParking, etDestination.getText().toString(), "transit").execute();
                     transportation = "transit";
                 }
@@ -477,7 +595,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         /* Check if routes were found */
-        if(routes.isEmpty()) {
+        if (routes.isEmpty()) {
             Toast.makeText(this, "No routes were found between the entered origin and destination", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -485,6 +603,67 @@ public class MainActivity extends AppCompatActivity
 
         drawRoute(getSelectedRoute(timeRoute, distRoute));
 
+    }
+
+    /**
+     * Show directions from current location to last parking.
+     * @param lastParking
+     */
+    @Override
+    public void pickupYes(String lastParking) {
+        pickupYes(lastParking, 0);
+    }
+
+    private void pickupYes(final String lastParking, final int tries) {
+
+        /* Get last know location */
+        //Check permission
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PICKUP_YES_REQUEST);
+            mLocation = null;   // Set current location to null if no permission
+        }
+        else {
+            mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        String lat = String.valueOf(location.getLatitude());
+                        String lon = String.valueOf(location.getLongitude());
+                        mLocation = lat + "," + lon;
+                    }
+                    else {
+                        if(tries < 5) {
+                            Log.d(TAG, "Location try number " + tries);
+                            pickupYes(lastParking, tries + 1);
+                        }
+                        else {
+                            Toast.makeText(MainActivity.this, R.string.location_null, Toast.LENGTH_SHORT);
+                            mLocation = null;
+                        }
+                    }
+                }
+            });
+        }
+
+        /* Set destination to parking and mode to bus*/
+        etDestination.setText(lastParking);
+        ((RadioGroup) findViewById(R.id.transGroup)).check(R.id.radioTransit);
+        transportation = "transit";
+
+        /* If current location was obtained, populate origin field and send directions request*/
+        if(mLocation != null) {
+            etOrigin.setText(mLocation);
+            sendRequest();
+        }
+        else {
+            etOrigin.setText("");
+        }
+
+    }
+
+    @Override
+    public void pickupNo() {
+        writeParkNRode(false);
     }
 
     /**
