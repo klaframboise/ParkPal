@@ -1,4 +1,4 @@
-package modules;
+package com.mcdevz.parkpal.directions;
 
 public class Distance {
     public String text;

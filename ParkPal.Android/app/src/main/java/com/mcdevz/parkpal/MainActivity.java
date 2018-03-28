@@ -59,9 +59,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import modules.DirectionFinder;
-import modules.DirectionFinderListener;
-import modules.Route;
+import com.mcdevz.parkpal.directions.DirectionFinder;
+import com.mcdevz.parkpal.directions.DirectionFinderListener;
+import com.mcdevz.parkpal.directions.Route;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, DirectionFinderListener {
@@ -532,7 +532,7 @@ public class MainActivity extends AppCompatActivity
      */
     private void drawRoute(Route route) {
         if(route.containsBar && transportation.equals("driving")){
-            Toast.makeText(this, "Warning! Don't Drink and drive! You can continue driving if you are sober. Otherwise, please use the provided Transit or Uber directions!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Warning! Don't Drink and drive! You can continue driving if you are sober. Otherwise, please use the provided Transit or Uber com.mcdevz.parkpal.directions!", Toast.LENGTH_LONG).show();
         }
         polylinePaths = new ArrayList<>();
         originMarkers = new ArrayList<>();

@@ -1,17 +1,9 @@
-package modules;
+package com.mcdevz.parkpal.directions;
 
-import android.app.Activity;
-import android.location.Location;
-import android.location.Geocoder;
-import android.location.Address;
 import android.os.AsyncTask;
-import android.content.Context;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.android.data.geojson.GeoJsonFeature;
-import com.google.maps.android.data.geojson.GeoJsonLayer;
-import com.mcdevz.parkpal.MapsActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DirectionFinder {
-    private static final String DIRECTION_URL_API = "https://maps.googleapis.com/maps/api/directions/json?";
+    private static final String DIRECTION_URL_API = "https://maps.googleapis.com/maps/api/com.mcdevz.parkpal.directions/json?";
     private static final String GOOGLE_API_KEY = "AIzaSyBPrQwf_NvAibI1MCgIR6fQiPMRYkWIM3U";
     private static final String TAG = "parkpal/DFinder";
     private DirectionFinderListener listener;

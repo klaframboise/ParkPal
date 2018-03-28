@@ -1,9 +1,6 @@
-package modules;
+package com.mcdevz.parkpal.directions;
 
-import com.google.android.gms.maps.model.LatLng;
-import java.util.ArrayList;
 import java.util.List;
-import modules.Route;
 
 public interface DirectionFinderListener {
     void onDirectionFinderStart();

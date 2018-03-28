@@ -1,4 +1,4 @@
-package modules;
+package com.mcdevz.parkpal.directions;
 
 public class Duration {
     public String text;
