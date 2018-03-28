@@ -238,8 +238,6 @@ public class MainActivity extends AppCompatActivity
     public void onRadioButtonClicked(View view){
 
         boolean checked = ((RadioButton)view).isChecked();
-        // transGroup = findViewById(R.id.transGroup);
-        //  btnTrans = (RadioButton) findViewById(transGroup.getCheckedRadioButtonId());
 
         switch(view.getId()){
 
@@ -288,16 +286,6 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        // If origin text box is left blank
-        //if (origin.isEmpty()) {
-        //Toast.makeText(this, "Please enter your current location", Toast.LENGTH_SHORT).show();
-        //return;
-        //}
-
-        // If destination text box is left blank
-        //if (destination.isEmpty()) {
-        //Toast.makeText(this, "Please enter your destination", Toast.LENGTH_SHORT).show();
-        //return;
     }
 
 
@@ -359,7 +347,6 @@ public class MainActivity extends AppCompatActivity
         progressDialog = ProgressDialog.show(this, "Please wait",
                 "Computing Directions", true);
 
-        //TODO remove if causing issues
         getMap().clear();
         if (transportation != "parknride") {
 
@@ -573,30 +560,6 @@ public class MainActivity extends AppCompatActivity
         double latB;
         double lngB;
 
-        /*try {
-
-            list = gc.getFromLocationName(locationA, 1);
-
-            if (gc.isPresent()) {
-
-                while (list.size() == 0) {
-                    list = gc.getFromLocationName(locationA, 1);
-                }
-                if (list.size() > 0) {
-                    Address address = list.get(0);
-                    latA = address.getLatitude();
-                    lngA = address.getLongitude();
-                }
-            }
-            else{
-                System.out.println("wsuppppppppppp");
-            }
-
-        }
-            catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        */
         for (GeoJsonFeature feature : layer.getFeatures()) {
 
             latB = Double.parseDouble(feature.getProperty("LATITUDE"));

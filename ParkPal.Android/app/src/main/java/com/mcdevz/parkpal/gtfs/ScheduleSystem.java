@@ -14,11 +14,9 @@ import com.kevinlaframboise.gtfsparser.model.Route;
 import com.kevinlaframboise.gtfsparser.model.Stop;
 import com.kevinlaframboise.gtfsparser.model.StopTime;
 import com.kevinlaframboise.gtfsparser.model.Trip;
-import com.kevinlaframboise.gtfsparser.serialization.GTFSPersistence;
 import com.mcdevz.parkpal.ScheduleBrowser;
 
 import java.io.File;
-import java.io.Serializable;
 
 
 /**
@@ -93,14 +91,8 @@ public class ScheduleSystem {
          */
         @Override
         protected void onPostExecute(Integer result) {
-            //TODO serialize
             deleteFiles();
             Log.d(TAG, "Finished parsing agencies");
-//            Log.d(TAG, "Starting serialization");
-//            long start = System.currentTimeMillis();
-//            GTFSPersistence.serializeWithJsonIoAndGZip(new File(context.getFilesDir(), FILENAME));
-//            long end = System.currentTimeMillis();
-//            Log.d(TAG, "Finished serializing. Time taken: " + (end-start)/1000.0 + " secs");
         }
 
         private void deleteFiles() {
