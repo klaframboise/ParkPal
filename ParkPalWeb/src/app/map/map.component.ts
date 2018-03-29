@@ -62,6 +62,7 @@ export class MapComponent implements OnInit {
     let end = this.destination;
     let parkAndRide;
     let transport;
+    let unit= this.data.unit;
     if (this.methodOfTransp == "PNR") {
       parkAndRide = true;
       transport = "TRANSIT";
@@ -74,7 +75,8 @@ export class MapComponent implements OnInit {
       origin: start,
       destination: end,
       travelMode: google.maps.TravelMode[transport],
-      provideRouteAlternatives: true
+      provideRouteAlternatives: true,
+      unitSystem: unit
     };
     this.directionsService.route(request, (result: google.maps.DirectionsResult, status) => {
       if (status == google.maps.DirectionsStatus.OK) {
@@ -121,11 +123,13 @@ export class MapComponent implements OnInit {
   }
 
   getParkAndRideDirections(origin, closestMetro: Station, destination) {
+    let unit = this.data.unit;
     var request = {
       origin: origin,
       destination: closestMetro.properties.NOM_STAT,
       travelMode: google.maps.TravelMode["DRIVING"],
-      provideRouteAlternatives: false
+      provideRouteAlternatives: false,
+      unitSystem: unit
     };
     this.directionsService.route(request, (result, status) => {
       if (status == google.maps.DirectionsStatus.OK) {
