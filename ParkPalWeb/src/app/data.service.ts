@@ -19,6 +19,7 @@ export class DataService {
   currentTransport = this.methodOfTransp.asObservable();
   currentRoutePref = this.methodOfRoutePref.asObservable();
   hideList = true;
+  hideQuestion = true;
 
   constructor() { }
 
@@ -44,5 +45,9 @@ export class DataService {
 
   changeHideList(){
       this.hideList = !this.hideList;
+  }
+
+  changeHideQuestion(){
+      this.hideQuestion = !this.hideQuestion;
   }
 }
