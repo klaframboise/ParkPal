@@ -117,5 +117,10 @@ export class NavBarComponent implements OnInit {
   showList(){
     this.data.changeHideList();
   }
+
+  showQuestion(){
+    console.log("Button pressed for question");
+    this.data.changeHideQuestion();
+  }
 }
 

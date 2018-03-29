@@ -20,8 +20,9 @@ export class DataService {
   currentTransport = this.methodOfTransp.asObservable();
   currentRoutePref = this.methodOfRoutePref.asObservable();
   hideList = true;
-  unit = google.maps.UnitSystem.METRIC;
 
+  unit = google.maps.UnitSystem.METRIC;
+  hideQuestion = true;
 
   constructor() { }
 
@@ -56,5 +57,8 @@ export class DataService {
     else{
       this.unit = google.maps.UnitSystem.IMPERIAL
     }
+  }
+  changeHideQuestion(){
+      this.hideQuestion = !this.hideQuestion;
   }
 }
