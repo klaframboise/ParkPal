@@ -24,4 +24,6 @@
     <string name="location_null">Unable to get location from location service after 5 tries. Please enter origin.</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nightswitch" />
+    <string name="nightSwitch">Switch</string>
 </resources>

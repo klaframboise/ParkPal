@@ -18,7 +18,10 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.TintableBackgroundView;
+import android.text.style.BackgroundColorSpan;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -30,11 +33,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Switch;
+import android.widget.CompoundButton;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -91,14 +98,20 @@ public class MainActivity extends AppCompatActivity
     private boolean parkedNRode;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private String mLocation;
-
+    private Switch nightSwitch;
+    private LinearLayout LinLayout;
+    private TextView colour;
     private static final int PICKUP_YES_REQUEST = 1;
+    static Boolean isTouched = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        LinLayout=(LinearLayout)findViewById(R.id.LinLayout);
+        nightSwitch=(Switch)findViewById(R.id.nightSwitch);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -111,6 +124,8 @@ public class MainActivity extends AppCompatActivity
         });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -118,6 +133,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
 
         if (!isNetworkAvailable()) {
             Toast.makeText(this, R.string.offline_msg, Toast.LENGTH_LONG).show();
@@ -148,6 +164,8 @@ public class MainActivity extends AppCompatActivity
                     .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
 
+
+
             btnGo = (Button) findViewById(R.id.btnGo);
             etOrigin = (EditSpinner) findViewById(R.id.etOrigin);
             etDestination = (EditSpinner) findViewById(R.id.etDestination);
@@ -169,11 +187,23 @@ public class MainActivity extends AppCompatActivity
                 }
             });
 
+            nightSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (nightSwitch.isChecked()) {
+                        LinLayout.setBackgroundColor(Color.DKGRAY);
+                    }
+                    else LinLayout.setBackgroundColor(Color.parseColor("#b20001"));
+
+                }
+        });
+
             // Setup location services
             mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         }
     }
+
 
     @Override
     public void onResume() {
@@ -200,6 +230,7 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -238,11 +269,11 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_manage) {
 
-        } else if (id == R.id.nav_share) {
+        }/* else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
 
-        }
+        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -730,6 +761,8 @@ public class MainActivity extends AppCompatActivity
     protected GoogleMap getMap() {
         return mMap;
     }
+
+
 
     public String getClosestParking(double latA, double lngA, GeoJsonLayer layer) {
 

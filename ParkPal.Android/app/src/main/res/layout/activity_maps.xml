@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:textColor="@color/colorTextPrimary"
-    android:orientation="vertical"  >
+    android:orientation="vertical"
+    android:id="@+id/LinLayout">
 
     <com.reginald.editspinner.EditSpinner
         android:id="@+id/etOrigin"
@@ -33,7 +34,6 @@
         app:dropDownDrawableWidth="25dp"
         app:dropDownDrawableHeight="25dp"
         />
-
 
 
     <RadioGroup
