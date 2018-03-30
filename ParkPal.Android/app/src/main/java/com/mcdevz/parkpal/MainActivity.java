@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity
                     sendRequest();
                 }
             });
-
+            /*When the night toggle is enabled on the side menu, night mode is enabled.*/
             nightSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
