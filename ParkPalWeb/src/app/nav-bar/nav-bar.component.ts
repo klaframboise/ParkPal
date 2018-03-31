@@ -22,10 +22,12 @@ export class NavBarComponent implements OnInit {
   favorites: string[] = new Array();
   selectedFavorite: any;
   lastFocusedInput: string;
+  favoriteMode: string;
 
   constructor(private data: DataService, private cookieService: CookieService) {
     this.lastFocusedInput = "origin";
     this.selectedFavorite = "placeholderfavorites";
+    this.favoriteMode = "add";
    }
 
   setType(transportationType:string,button:number){
@@ -51,6 +53,8 @@ export class NavBarComponent implements OnInit {
   }
 
   initializeCookiesList() {
+    this.cookiesList = [];
+    this.favorites = [];
     for (var x in this.cookieService.getAll()) {
       console.log(this.cookieService.get(x));
       if (this.cookieService.get(x).startsWith("<H>")){
@@ -121,7 +125,9 @@ export class NavBarComponent implements OnInit {
   }
 
   getSelectedFavorite() {
-    if (this.selectedFavorite == "addorigin") {
+    if (this.selectedFavorite == "removefavorite") {
+      this.favoriteMode = "remove";
+    } else if (this.selectedFavorite == "addorigin") {
       var fromValue = (<HTMLTextAreaElement>document.getElementById("from")).value;
       if (fromValue != "") 
         this.addFavorite(fromValue);
@@ -130,6 +136,12 @@ export class NavBarComponent implements OnInit {
       if (toValue != "")
         this.addFavorite(toValue);
     } else {
+      if (this.favoriteMode == "remove") {
+        this.cookieService.delete("<F>" + this.selectedFavorite);
+        this.initializeCookiesList();
+        this.favoriteMode = "add";
+        return;
+      }
       if (this.lastFocusedInput == "origin") {
         this.updateAddress(String(this.selectedFavorite), "from");
       } else {

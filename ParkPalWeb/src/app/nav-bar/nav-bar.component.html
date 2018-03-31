@@ -21,8 +21,9 @@
     <select name="" id="favoriteList" placeholder="Favorites" (change)="getSelectedFavorite()" [(ngModel)]="selectedFavorite">
       <option value="placeholderfavorites" disabled selected hidden>Favorites</option>
       <option *ngFor="let favorite of favorites" [value]="favorite.substring(3)">{{favorite.substring(3)}}</option>
-      <option value="addorigin">Add Origin To Favorites</option>
-      <option value="adddestination">Add Destination To Favorites</option>
+      <option value="addorigin" class="addfavorite">Add Origin To Favorites</option>
+      <option value="adddestination" class="addfavorite">Add Destination To Favorites</option>
+      <option value="removefavorite" id="removefavorite">Remove Favorite</option>
     </select>
     <button (click)="showQuestion()" id="searchBtn">FAQ</button>
   </div>
