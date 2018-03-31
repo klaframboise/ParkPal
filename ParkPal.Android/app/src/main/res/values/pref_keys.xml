@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="parked_n_rode">parkednrode</string>
+    <string name="last_parking">lastparking</string>
+    <string name="history">history</string>
+    <string name="favs">history</string>
+</resources>
