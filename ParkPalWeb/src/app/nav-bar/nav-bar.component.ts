@@ -134,6 +134,12 @@ export class NavBarComponent implements OnInit {
 
   addFavorite(fav: string) {
     console.log(fav);
+    for (var x in this.favorites) {
+      if (this.favorites[x].substring(3) == fav){
+        alert("This favorite already exists");
+        return;
+      }
+    }
     if (this.favorites.length >= 5) {
       for (var x in this.cookieService.getAll()) {
         if (this.cookieService.get(x).startsWith("<F>")){
