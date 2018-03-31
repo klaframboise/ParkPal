@@ -17,6 +17,7 @@ export class NavBarComponent implements OnInit {
   methodOfTransp: string;
   routePreference: string;
   cookiesFull: boolean;
+  distanceMetric = true;
   cookiesList: string[] = new Array();
   favorites: string[] = new Array();
   selectedFavorite: any;
@@ -42,6 +43,11 @@ export class NavBarComponent implements OnInit {
       this.routePreference = "FASTEST";
     }
     console.log('the toggle: ' + this.routePreference);
+  }
+
+  private toggleDistance() {
+    this.distanceMetric = !this.distanceMetric;
+    this.data.changeUnitOfDistance(this.distanceMetric);
   }
 
   initializeCookiesList() {
@@ -177,6 +183,11 @@ export class NavBarComponent implements OnInit {
   }
   showList(){
     this.data.changeHideList();
+  }
+
+  showQuestion(){
+    console.log("Button pressed for question");
+    this.data.changeHideQuestion();
   }
 }
 

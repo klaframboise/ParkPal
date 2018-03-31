@@ -12,6 +12,7 @@ export class DataService {
   private numberSource = new BehaviorSubject<number>(0)
   private methodOfTransp = new BehaviorSubject<string>("DRIVING");
   private methodOfRoutePref = new BehaviorSubject<string>("FASTEST");
+  private unitOfDistance; 
 
   currentOrigin = this.originSource.asObservable();
   currentDestination = this.destinationSource.asObservable();
@@ -19,6 +20,9 @@ export class DataService {
   currentTransport = this.methodOfTransp.asObservable();
   currentRoutePref = this.methodOfRoutePref.asObservable();
   hideList = true;
+
+  unit = google.maps.UnitSystem.METRIC;
+  hideQuestion = true;
 
   constructor() { }
 
@@ -44,5 +48,17 @@ export class DataService {
 
   changeHideList(){
       this.hideList = !this.hideList;
+  }
+
+  changeUnitOfDistance(value: boolean){
+    if(value){
+      this.unit = google.maps.UnitSystem.METRIC
+    }
+    else{
+      this.unit = google.maps.UnitSystem.IMPERIAL
+    }
+  }
+  changeHideQuestion(){
+      this.hideQuestion = !this.hideQuestion;
   }
 }

@@ -24,6 +24,7 @@
       <option value="addorigin">Add Origin To Favorites</option>
       <option value="adddestination">Add Destination To Favorites</option>
     </select>
+    <button (click)="showQuestion()" id="searchBtn">FAQ</button>
   </div>
   <div class="logonav">
     <button class="transButton" (click)="setType('TRANSIT',0)"><img src="../assets/bus.png" class="transImg" alt="Bus Logo" width="20px" height="20px"></button>
@@ -40,6 +41,15 @@
     <div class="option-text-wrapper">
       <div class="option-text">Shortest</div>
       <div class="option-text">Distance</div>
+    </div>
+  </div>
+  <div class="switchUnit">
+    <div class="option-text-wrapper">
+      <div class="option-text">km</div>
+    </div>
+    <ui-switch (click)="toggleDistance()" size="small" color="red"></ui-switch>
+    <div class="option-text-wrapper">
+      <div class="option-text">mile</div>
     </div>
   </div>
 </nav>
