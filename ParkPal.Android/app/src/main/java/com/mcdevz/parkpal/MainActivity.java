@@ -668,7 +668,7 @@ public class MainActivity extends AppCompatActivity
                             pickupYes(lastParking, tries + 1);
                         }
                         else {
-                            Toast.makeText(MainActivity.this, R.string.location_null, Toast.LENGTH_SHORT);
+                            Toast.makeText(MainActivity.this, R.string.location_null, Toast.LENGTH_SHORT).show();
                             mLocation = null;
                         }
                     }
@@ -683,10 +683,12 @@ public class MainActivity extends AppCompatActivity
 
         /* If current location was obtained, populate origin field and send directions request*/
         if(mLocation != null) {
+            Log.d(TAG, "Setting origin to: " + mLocation + " and sending request");
             etOrigin.setText(mLocation);
             sendRequest();
         }
         else {
+            Log.d(TAG, "Setting origin to empty string and prompting");
             etOrigin.setText("");
         }
 
@@ -694,6 +696,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void pickupNo() {
+        // Nothing required, except dissmissing the prompt.
+    }
+
+    @Override
+    public void pickupAlready() {
+        // Prevent prompt from appearing
         writeParkNRode(false);
     }
 

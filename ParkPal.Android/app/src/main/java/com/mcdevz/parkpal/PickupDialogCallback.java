@@ -9,4 +9,5 @@ import android.support.annotation.IntDef;
 interface PickupDialogCallback {
     void pickupYes(String lastParking);
     void pickupNo();
+    void pickupAlready();
 }

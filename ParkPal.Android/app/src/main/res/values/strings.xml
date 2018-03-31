@@ -16,7 +16,7 @@
     <string name="no">No</string>
     <string name="offline_msg">It appears that you are offline. You will not be able to create routes, but you can view the standard schedules.</string>
     <string name="title_activity_schedule_browser">ScheduleBrowser</string>
-    <string name="pickup_dialog_msg">Last time you have used the park\'n\'ride feature, we drove you to %s. Would you like to go pickup your car via transit?</string>
+    <string name="pickup_dialog_msg">Last time you have used the park\'n\'ride feature, we drove you to %s. Would you like to go pickup your car via transit? If you do not wish to be reminded, select \'Already picked up\' or create a new itinerary.</string>
     <string name="pickup_dialog_name">Don\'t forget your car!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">ParkPal</string>
@@ -24,6 +24,8 @@
     <string name="location_null">Unable to get location from location service after 5 tries. Please enter origin.</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="already_picked">Already Picked Up</string>
+    <string name="prompt_current_loc">Please fill in your current location</string>
     <string name="nightswitch" />
     <string name="nightSwitch">Switch</string>
 </resources>
