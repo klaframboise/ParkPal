@@ -18,8 +18,14 @@ export class NavBarComponent implements OnInit {
   routePreference: string;
   cookiesFull: boolean;
   cookiesList: string[] = new Array();
+  favorites: string[] = new Array();
+  selectedFavorite: any;
+  lastFocusedInput: string;
 
-  constructor(private data: DataService, private cookieService: CookieService) { }
+  constructor(private data: DataService, private cookieService: CookieService) {
+    this.lastFocusedInput = "origin";
+    this.selectedFavorite = "placeholderfavorites";
+   }
 
   setType(transportationType:string,button:number){
     this.methodOfTransp = transportationType;
@@ -40,7 +46,12 @@ export class NavBarComponent implements OnInit {
 
   initializeCookiesList() {
     for (var x in this.cookieService.getAll()) {
-      this.cookiesList.push(this.cookieService.get(x));
+      if (this.cookieService.get(x).startsWith("<H>")){
+        this.cookiesList.push(this.cookieService.get(x));
+      }
+      if (this.cookieService.get(x).startsWith("<F>")){
+        this.favorites.push(this.cookieService.get(x));
+      }
     }
   }
   ngOnInit() {
@@ -56,6 +67,8 @@ export class NavBarComponent implements OnInit {
 
   // this function is called whenever search button is pressed to update cookies
   updateCookies(origin: string, destination: string) {
+    origin = "<H>" + origin;
+    destination = "<H>" + destination;
     if (this.cookiesList.length >= 5) {
       if (this.cookiesList.indexOf(origin) == -1) {
         this.cookiesList.splice(0, 1);
@@ -76,7 +89,12 @@ export class NavBarComponent implements OnInit {
       }
     }
 
-    this.cookieService.deleteAll();
+    for (var x in this.cookieService.getAll()) {
+      if (this.cookieService.get(x).startsWith("<H>")){
+        this.cookieService.delete(x);
+      }
+    }
+    
     for (let i in this.cookiesList) {
       var index = +i;
       index++;
@@ -93,6 +111,42 @@ export class NavBarComponent implements OnInit {
       this.data.changeMethodOfRoutePref(this.routePreference)
       this.updateCookies(origin, destination)
     }
+  }
+
+  getSelectedFavorite() {
+    if (this.selectedFavorite == "addorigin") {
+      this.addFavorite((<HTMLTextAreaElement>document.getElementById("from")).value);
+    } else if (this.selectedFavorite == "adddestination") {
+      this.addFavorite((<HTMLTextAreaElement>document.getElementById("to")).value);
+    } else {
+      if (this.lastFocusedInput == "origin") {
+        this.updateAddress(String(this.selectedFavorite), "from");
+      } else {
+        this.updateAddress(String(this.selectedFavorite), "to");
+      }
+    }
+  }
+
+  addFavorite(fav: string) {
+    console.log(fav);
+    if (this.favorites.length >= 5) {
+      for (var x in this.cookieService.getAll()) {
+        if (this.cookieService.get(x).startsWith("<F>")){
+          this.cookieService.delete(x);
+        }
+      }
+      this.favorites.reverse();
+      var popped = this.favorites.pop();
+      this.cookieService.delete(popped);
+      this.favorites.reverse();
+    }
+    fav = "<F>" + fav;
+    this.favorites.push(fav);
+    this.cookieService.set(fav, fav);
+  }
+
+  setFocus(focus: string){
+    this.lastFocusedInput = focus;
   }
 
   // JS function responsible for hiding/unhiding history dropdown

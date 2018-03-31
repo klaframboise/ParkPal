@@ -1,23 +1,29 @@
 <nav (keyup.enter)="newMessage(originInput.value,destinationInput.value)">
   <div class="topnav" >
     <div class="inputAddress">
-      <input type="text" placeholder="Your Location" id="from" #originInput>
+      <input type="text" placeholder="Your Location" id="from" (focus)="setFocus('origin')" #originInput>
       <ul class="onclick-menu-content" id="originHistory">
-        <li *ngFor="let cookie of cookiesList"><button class="dropdownBtn" (click)="updateAddress(cookie, 'from')">{{ cookie }}</button></li>
+        <li *ngFor="let cookie of cookiesList"><button class="dropdownBtn" (click)="updateAddress(cookie.substring(3), 'from')">{{ cookie.substring(3) }}</button></li>
       </ul>
       <button (click)="showDropDown('originHistory')" class="transButton" id="origin_dropdown"><i class="fa fa-caret-down"></i></button>
     </div>
 
     <div class="inputAddress">
-      <input type="text" placeholder="Choose Destination" id="to" #destinationInput>
+      <input type="text" placeholder="Choose Destination" id="to" (focus)="setFocus('destination')" #destinationInput>
       <ul class="onclick-menu-content" id="destHistory">
-        <li *ngFor="let cookie of cookiesList"><button class="dropdownBtn" (click)="updateAddress(cookie, 'to')">{{ cookie }}</button></li>
+        <li *ngFor="let cookie of cookiesList"><button class="dropdownBtn" (click)="updateAddress(cookie.substring(3), 'to')">{{ cookie.substring(3) }}</button></li>
       </ul>
       <button (click)="showDropDown('destHistory')" class="transButton" id="destination_dropdown"><i class="fa fa-caret-down"></i></button>
     </div>
 
     <button (click)="newMessage(originInput.value,destinationInput.value)" id="searchBtn">Search</button>
     <button (click)="showList()" id="searchBtn">List Parking Areas</button>
+    <select name="" id="favoriteList" placeholder="Favorites" (change)="getSelectedFavorite()" [(ngModel)]="selectedFavorite">
+      <option value="placeholderfavorites" disabled selected hidden>Favorites</option>
+      <option *ngFor="let favorite of favorites" [value]="favorite.substring(3)">{{favorite.substring(3)}}</option>
+      <option value="addorigin">Add Origin To Favorites</option>
+      <option value="adddestination">Add Destination To Favorites</option>
+    </select>
   </div>
   <div class="logonav">
     <button class="transButton" (click)="setType('TRANSIT',0)"><img src="../assets/bus.png" class="transImg" alt="Bus Logo" width="20px" height="20px"></button>
