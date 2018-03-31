@@ -46,6 +46,7 @@ export class NavBarComponent implements OnInit {
 
   initializeCookiesList() {
     for (var x in this.cookieService.getAll()) {
+      console.log(this.cookieService.get(x));
       if (this.cookieService.get(x).startsWith("<H>")){
         this.cookiesList.push(this.cookieService.get(x));
       }
@@ -115,9 +116,13 @@ export class NavBarComponent implements OnInit {
 
   getSelectedFavorite() {
     if (this.selectedFavorite == "addorigin") {
-      this.addFavorite((<HTMLTextAreaElement>document.getElementById("from")).value);
+      var fromValue = (<HTMLTextAreaElement>document.getElementById("from")).value;
+      if (fromValue != "") 
+        this.addFavorite(fromValue);
     } else if (this.selectedFavorite == "adddestination") {
-      this.addFavorite((<HTMLTextAreaElement>document.getElementById("to")).value);
+      var toValue = (<HTMLTextAreaElement>document.getElementById("to")).value;
+      if (toValue != "")
+        this.addFavorite(toValue);
     } else {
       if (this.lastFocusedInput == "origin") {
         this.updateAddress(String(this.selectedFavorite), "from");
@@ -142,7 +147,9 @@ export class NavBarComponent implements OnInit {
     }
     fav = "<F>" + fav;
     this.favorites.push(fav);
-    this.cookieService.set(fav, fav);
+    for (var x in this.favorites) {
+      this.cookieService.set(this.favorites[x], this.favorites[x]);
+    }
   }
 
   setFocus(focus: string){
