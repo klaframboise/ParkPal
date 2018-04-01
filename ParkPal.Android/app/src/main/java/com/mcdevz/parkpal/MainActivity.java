@@ -287,8 +287,9 @@ public class MainActivity extends AppCompatActivity
             Intent myIntent = new Intent(this, FAQSection.class);
             startActivity(myIntent);
         }
-        // Handle the camera action
-        else if (id == R.id.nav_nightmode) {
+            // Handle the camera action
+        else if (id == R.id.nav_settings) {
+
 
             Intent myIntent = new Intent(this, Night.class);
             startActivity(myIntent);

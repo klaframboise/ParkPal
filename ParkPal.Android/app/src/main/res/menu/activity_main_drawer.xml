@@ -8,11 +8,8 @@
         android:id="@+id/nav_favorites"
         android:title="Favorites" />
     <item
-        android:id="@+id/nav_units"
-        android:title="Units" />
-    <item
-        android:id="@+id/nav_nightmode"
-        android:title="Night Mode" />
+        android:id="@+id/nav_settings"
+        android:title="Settings" />
     <item
         android:id="@+id/nav_F.A.Q."
         android:title="F.A.Q." />
