@@ -197,6 +197,15 @@ export class NavBarComponent implements OnInit {
     this.data.changeHideList();
   }
 
+  //method to allow for night mode by changing between nav and nav.dark-mode
+  toggleDarkLight() {
+    var body = document.getElementById("nav");
+    var currentClass = body.className;
+    body.className = currentClass == "dark-mode" ? "light-mode" : "dark-mode";
+  }
+
+
+
   showQuestion(){
     console.log("Button pressed for question");
     this.data.changeHideQuestion();

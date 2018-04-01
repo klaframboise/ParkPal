@@ -1,4 +1,5 @@
-<nav (keyup.enter)="newMessage(originInput.value,destinationInput.value)">
+<nav (keyup.enter)="newMessage(originInput.value,destinationInput.value)" id="nav"class="dark-mode">
+    <button (click)="toggleDarkLight()">🌛</button>
   <div class="topnav" >
     <div class="inputAddress">
       <input type="text" placeholder="Your Location" id="from" (focus)="setFocus('origin')" #originInput>
@@ -16,6 +17,9 @@
       <button (click)="showDropDown('destHistory')" class="transButton" id="destination_dropdown"><i class="fa fa-caret-down"></i></button>
     </div>
 
+  
+    
+      
     <button (click)="newMessage(originInput.value,destinationInput.value)" id="searchBtn">Search</button>
     <button (click)="showList()" id="searchBtn">List Parking Areas</button>
     <select name="" id="favoriteList" placeholder="Favorites" (change)="getSelectedFavorite()" [(ngModel)]="selectedFavorite">
