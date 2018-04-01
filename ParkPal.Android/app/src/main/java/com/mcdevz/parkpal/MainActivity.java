@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(myIntent);
         }
             // Handle the camera action
-        else if (id == R.id.nav_nightmode) {
+        else if (id == R.id.nav_settings) {
 
             Intent myIntent = new Intent(this, Night.class);
             startActivity(myIntent);
