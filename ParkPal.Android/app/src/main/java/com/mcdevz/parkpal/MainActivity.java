@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(myIntent);
             finish();
         }
-        
+
 //        } else if (id == R.id.nav_slideshow) {
 //
 //        } else if (id == R.id.nav_manage) {
