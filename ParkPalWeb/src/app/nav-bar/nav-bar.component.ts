@@ -24,6 +24,7 @@ export class NavBarComponent implements OnInit {
   selectedFavorite: any;
   lastFocusedInput: string;
   favoriteMode: string;
+  cookieValue = 'UNKNOWN';
 
   constructor(private data: DataService, private cookieService: CookieService) {
     this.lastFocusedInput = "origin";
@@ -56,8 +57,8 @@ export class NavBarComponent implements OnInit {
   initializeCookiesList() {
     this.cookiesList = [];
     this.favorites = [];
-    this.nightTheme= document.getElementById("nav");
-    console.log("initalize cookies = " + this.nightTheme.className);
+  //  this.nightTheme= document.getElementById("nav");
+   // console.log("initalize cookies = " + this.nightTheme.className);
     for (var x in this.cookieService.getAll()) {
       console.log(this.cookieService.get(x));
       if (this.cookieService.get(x).startsWith("<H>")){
@@ -68,9 +69,30 @@ export class NavBarComponent implements OnInit {
       }
     }
   }
+
+  initalizeNavBar(){
+    const cookieExists: boolean = this.cookieService.check('Test');
+     if(cookieExists == false){
+    this.cookieService.set( 'Test', 'light-mode' );
+    
+  }
+  this.cookieValue = this.cookieService.get('Test');
+    if(this.cookieValue == "light-mode"){
+      var night = document.getElementById("nav");
+      night.className = "light-mode";
+      this.cookieService.set( 'Test', 'dark-mode' );
+    }
+    else{
+      var night = document.getElementById("nav");
+      night.className = "dark-mode";
+      this.cookieService.set( 'Test', 'light-mode' );
+    }
+  }
+
   ngOnInit() {
     // below, initializes cookiesList
     this.initializeCookiesList();
+    this.initalizeNavBar();
 
     this.data.currentOrigin.subscribe(origin => this.origin=origin)
     this.data.currentDestination.subscribe(destination => this.destination=destination)
@@ -202,20 +224,21 @@ export class NavBarComponent implements OnInit {
 
   //method to allow for night mode by changing between nav and nav.dark-mode
   toggleDarkLight() {
-  //  var body = document.getElementById("nav");
-  var themeMode = this.nightTheme;
-//    var currentClass = body.className;
-//    body.className = currentClass == "dark-mode" ? "light-mode" : "dark-mode";
-//    var body.className = this.night;
 
-
-    if(themeMode.className == "light-mode"){
-      themeMode.className="dark-mode";
+    var themeMode = this.cookieService.get('Test');
+    if(themeMode == "light-mode"){
+      var night = document.getElementById("nav");
+      night.className = "dark-mode";
+      themeMode ="dark-mode";
+      this.cookieService.set( 'Test', 'dark-mode' );
     }else{
-      themeMode.className="light-mode";
+
+      var night = document.getElementById("nav");
+      night.className = "light-mode";
+      this.cookieService.set( 'Test', 'light-mode' );
+      themeMode="light-mode";
     }
 
-    console.log("after switch = "+themeMode.className);
   }
 
 
