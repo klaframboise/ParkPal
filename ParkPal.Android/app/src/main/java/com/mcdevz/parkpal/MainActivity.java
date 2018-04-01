@@ -1,7 +1,6 @@
 package com.mcdevz.parkpal;
 
 import android.Manifest;
-import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -13,15 +12,9 @@ import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -68,7 +61,6 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -209,12 +201,12 @@ public class MainActivity extends AppCompatActivity
             });
 
 
-            LinLayout=(LinearLayout)findViewById(R.id.LinLayout);
+            LinLayout=(LinearLayout) findViewById(R.id.LinLayout);
             if(nightMode == true){
                 LinLayout.setBackgroundColor(Color.DKGRAY);
             }
             else {
-                //LinLayout.setBackgroundColor(Color.parseColor("#b20001"));
+                LinLayout.setBackgroundColor(Color.parseColor("#b20001"));
             }
 
 
@@ -293,7 +285,6 @@ public class MainActivity extends AppCompatActivity
 
             Intent myIntent = new Intent(this, Night.class);
             startActivity(myIntent);
-            finish();
         }
         else if (id == R.id.nav_favorites) {
             Intent myIntent = new Intent(this,Favs.class);
