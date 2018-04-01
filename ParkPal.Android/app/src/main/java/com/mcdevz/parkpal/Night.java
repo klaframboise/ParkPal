@@ -15,7 +15,9 @@ public class Night extends AppCompatActivity {
    // public static Switch nightSwitch;
     public static LinearLayout LinLayout;
     private TextView colour;
-    public static Boolean checked = false;
+    public static Boolean unitUS = false;
+    public static Boolean checked1 = false;
+    public static Boolean checked2 = false;
     public MainActivity ma = new MainActivity();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,17 +27,33 @@ public class Night extends AppCompatActivity {
         /*When the night toggle is enabled on the side menu, night mode is enabled.*/
 
         final Switch nightSwitch = (Switch)  findViewById(R.id.nightSwitch);
-        nightSwitch.setChecked(checked);
+        nightSwitch.setChecked(checked1);
         nightSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
 
                 if (nightSwitch.isChecked()) {
-                checked = true;
+                checked1 = true;
                 ma.nightMode = true;
             } else {
                     ma.nightMode = false;
-                    checked = false;
+                    checked1 = false;
+                }
+            }
+        });
+
+        final Switch unitSwitch = (Switch) findViewById(R.id.unitSwitch);
+        unitSwitch.setChecked(checked2);
+        unitSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+
+                if (unitSwitch.isChecked()) {
+                    checked2 = true;
+                    unitUS = true;
+                } else {
+                    unitUS = false;
+                    checked2 = false;
                 }
             }
         });
