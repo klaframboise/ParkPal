@@ -63,6 +63,14 @@ public class PickupDialog extends DialogFragment {
             }
         });
 
+        builder.setNeutralButton(R.string.already_picked, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                callback.pickupAlready();
+            }
+        });
+
+
         AlertDialog dialog = builder.create();
         return dialog;
     }

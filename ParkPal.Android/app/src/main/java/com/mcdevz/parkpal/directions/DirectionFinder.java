@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.mcdevz.parkpal.Night;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,6 +30,8 @@ public class DirectionFinder {
     private String origin;
     private String destination;
     private String transportation;
+    private String units;
+
 
     public DirectionFinder(DirectionFinderListener listener, String origin, String destination, String transportation) {
         this.listener = listener;
@@ -42,11 +46,20 @@ public class DirectionFinder {
     }
 
     private String createUrl() throws UnsupportedEncodingException {
+
+        Night n = new Night();
+        if (n.unitUS = true) {
+            units = "imperial";
+        }
+
         String urlOrigin = URLEncoder.encode(origin, "utf-8");
         String urlDestination = URLEncoder.encode(destination, "utf-8");
         String urlTransportation = URLEncoder.encode(transportation, "utf-8");
+        String urlUnits = URLEncoder.encode(units, "utf-8");
 
-        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination+ "&mode="+ urlTransportation + "&alternatives=true&key=" + GOOGLE_API_KEY;
+        System.out.println(units);
+        System.out.println(urlUnits);
+        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&mode=" + urlTransportation + "&units=" + urlUnits + "&alternatives=true&key=" + GOOGLE_API_KEY;
     }
 
     private class DownloadRawData extends AsyncTask<String, Void, String> {

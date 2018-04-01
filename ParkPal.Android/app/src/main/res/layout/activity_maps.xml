@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:textColor="@color/colorTextPrimary"
+
     android:orientation="vertical"  >
 
 
@@ -67,6 +68,7 @@
 
 
     </RelativeLayout>
+
 
 
 
@@ -195,39 +197,33 @@
             android:text="0 min" />
 
 
+        <RadioGroup
+            android:id="@+id/routeSelGroup"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:checkedButton="@id/radioFastestPath"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <RadioButton
+                android:id="@+id/radioShortestPath"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:text="@string/shortest_path"
+                android:textColor="@color/colorTextPrimary" />
 
-                <RadioGroup
-                    android:id="@+id/routeSelGroup"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:checkedButton="@id/radioFastestPath"
-                    android:orientation="vertical">
+            <RadioButton
+                android:id="@+id/radioFastestPath"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:text="@string/fastest_path"
+                android:textColor="@color/colorTextPrimary" />
+        </RadioGroup>
 
-                <RadioButton
-                    android:id="@+id/radioShortestPath"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/shortest_path"
-                    android:layout_marginLeft="10dp"
-                    android:textColor="@color/colorTextPrimary" />
 
-                <RadioButton
-                    android:id="@+id/radioFastestPath"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/fastest_path"
-                    android:layout_marginLeft="10dp"
-                    android:textColor="@color/colorTextPrimary" />
-                </RadioGroup>
-            </LinearLayout>
     </LinearLayout>
 
     <TextView

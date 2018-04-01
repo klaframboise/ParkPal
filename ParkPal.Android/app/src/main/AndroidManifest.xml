@@ -34,11 +34,11 @@
         <activity
             android:name=".ScheduleBrowser"
             android:label="@string/title_activity_schedule_browser"
-            android:parentActivityName=".MapsActivity"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.mcdevz.parkpal.MapsActivity" />
+                android:value="com.mcdevz.parkpal.MainActivity" />
         </activity>
         <activity
             android:name=".MainActivity"
@@ -50,7 +50,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".aa" />
+        <activity android:name=".FAQSection" />
+        <activity android:name=".Night"></activity>
         <activity android:name=".Favs"></activity>
     </application>
 

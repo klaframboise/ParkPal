@@ -27,10 +27,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -54,6 +57,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.maps.android.data.geojson.GeoJsonFeature;
 import com.google.maps.android.data.geojson.GeoJsonLayer;
 import com.google.maps.android.data.geojson.GeoJsonPointStyle;
+import com.mcdevz.parkpal.directions.DirectionFinder;
+import com.mcdevz.parkpal.directions.DirectionFinderListener;
+import com.mcdevz.parkpal.directions.Route;
 import com.mcdevz.parkpal.gtfs.ScheduleSystem;
 import com.mcdevz.parkpal.uber.UberAPIController;
 import com.reginald.editspinner.EditSpinner;
@@ -62,14 +68,10 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.security.Permission;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import com.mcdevz.parkpal.directions.DirectionFinder;
-import com.mcdevz.parkpal.directions.DirectionFinderListener;
-import com.mcdevz.parkpal.directions.Route;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, DirectionFinderListener,
@@ -92,28 +94,27 @@ public class MainActivity extends AppCompatActivity
     private final static String TAG = "parkpal/MActivity";
     private ArrayList<String> history;
     private ArrayList<String> favs;
+    private TextView err;
+    private static final int PICKUP_YES_REQUEST = 1;
     private boolean parkedNRode;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private String mLocation;
-    private TextView err;
+    //private Switch nightSwitch;
+    private LinearLayout LinLayout;
+    private TextView colour;
+    static Boolean isTouched = false;
+    //private Night night = new Night();
+    public static Boolean nightMode = false;
 
-    private static final int PICKUP_YES_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -123,6 +124,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
 
         if (!isNetworkAvailable()) {
             Toast.makeText(this, R.string.offline_msg, Toast.LENGTH_LONG).show();
@@ -140,6 +142,7 @@ public class MainActivity extends AppCompatActivity
             if (history == null) {
                 history = new ArrayList<String>();
             }
+
             if (favs == null) {
                 favs = new ArrayList<String>();
                 for(int i = 5; i>0; i--) {
@@ -151,6 +154,7 @@ public class MainActivity extends AppCompatActivity
             try {
                 favs = (ArrayList<String>) ObjectSerializer.deserialize(prefFavs.getString("favs", ObjectSerializer.serialize(new ArrayList<String>())));
                 history = (ArrayList<String>) ObjectSerializer.deserialize(prefHistory.getString("history", ObjectSerializer.serialize(new ArrayList<String>())));
+
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -165,6 +169,7 @@ public class MainActivity extends AppCompatActivity
             err = (TextView) findViewById(R.id.err);
             cFav = (Button) findViewById(R.id.cFav);
             dFav = (Button) findViewById(R.id.dFav);
+
             etOrigin = (EditSpinner) findViewById(R.id.etOrigin);
             etDestination = (EditSpinner) findViewById(R.id.etDestination);
             transGroup = (RadioGroup) findViewById(R.id.transGroup);
@@ -174,6 +179,7 @@ public class MainActivity extends AppCompatActivity
                     history);
             etOrigin.setAdapter(adapter);
             etDestination.setAdapter(adapter);
+
 
             cFav.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -191,6 +197,7 @@ public class MainActivity extends AppCompatActivity
                 }
             });
 
+
             btnGo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -200,6 +207,17 @@ public class MainActivity extends AppCompatActivity
                     sendRequest();
                 }
             });
+
+
+            LinLayout=(LinearLayout)findViewById(R.id.LinLayout);
+            if(nightMode == true){
+                LinLayout.setBackgroundColor(Color.DKGRAY);
+            }
+            else {
+                //LinLayout.setBackgroundColor(Color.parseColor("#b20001"));
+            }
+
+
 
             // Setup location services
             mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -233,6 +251,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -264,19 +283,21 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_F_A_Q_) {
 
-            //Intent myIntent = new Intent(this, FAQSection.class);
-            //startActivity(myIntent);
+
+            Intent myIntent = new Intent(this, FAQSection.class);
+            startActivity(myIntent);
         }
         // Handle the camera action
         else if (id == R.id.nav_nightmode) {
 
-            //Intent myIntent = new Intent(this, Night.class);
-            //startActivity(myIntent);
+            Intent myIntent = new Intent(this, Night.class);
+            startActivity(myIntent);
             finish();
         }
         else if (id == R.id.nav_favorites) {
             Intent myIntent = new Intent(this,Favs.class);
             startActivity(myIntent);
+
         }
 
 //        } else if (id == R.id.nav_slideshow) {
@@ -682,7 +703,7 @@ public class MainActivity extends AppCompatActivity
                             pickupYes(lastParking, tries + 1);
                         }
                         else {
-                            Toast.makeText(MainActivity.this, R.string.location_null, Toast.LENGTH_SHORT);
+                            Toast.makeText(MainActivity.this, R.string.location_null, Toast.LENGTH_SHORT).show();
                             mLocation = null;
                         }
                     }
@@ -697,10 +718,12 @@ public class MainActivity extends AppCompatActivity
 
         /* If current location was obtained, populate origin field and send directions request*/
         if(mLocation != null) {
+            Log.d(TAG, "Setting origin to: " + mLocation + " and sending request");
             etOrigin.setText(mLocation);
             sendRequest();
         }
         else {
+            Log.d(TAG, "Setting origin to empty string and prompting");
             etOrigin.setText("");
         }
 
@@ -708,6 +731,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void pickupNo() {
+        // Nothing required, except dissmissing the prompt.
+    }
+
+    @Override
+    public void pickupAlready() {
+        // Prevent prompt from appearing
         writeParkNRode(false);
     }
 
@@ -776,6 +805,7 @@ public class MainActivity extends AppCompatActivity
         return mMap;
     }
 
+
     public String getClosestParking(double latA, double lngA, GeoJsonLayer layer) {
 
         Geocoder gc = new Geocoder(this, Locale.getDefault());
@@ -821,6 +851,7 @@ public class MainActivity extends AppCompatActivity
         }
         editor.commit();
     }
+
 
     public boolean addStringFav(String s) {
         if (favs == null) {

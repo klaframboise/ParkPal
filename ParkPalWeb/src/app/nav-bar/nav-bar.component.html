@@ -2,7 +2,7 @@
   <div class="topnav" >
     <input type="text" placeholder="Your Location" id="from" #originInput>
     <input type="text" placeholder="Choose Destination" id="to"#destinationInput>
-    <button (click)="newMessage(originInput.value,destinationInput.value)"></button>
+    <button (click)="newMessage(originInput.value,destinationInput.value)" id="searchBtn">Search</button>
   </div>
   <div class="logonav">
     <button class="transButton" (click)="setType('TRANSIT',0)"><img src="../assets/bus.png" class="transImg" alt="Bus Logo" width="20px" height="20px"></button>
@@ -15,7 +15,7 @@
       <div class="option-text">Fastest</div>
       <div class="option-text">Time</div>
     </div>
-    <ui-switch size="small" color="red"></ui-switch>
+    <ui-switch (click)="toggleClicked()" size="small" color="red"></ui-switch>
     <div class="option-text-wrapper">
       <div class="option-text">Shortest</div>
       <div class="option-text">Distance</div>
