@@ -250,13 +250,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(myIntent);
             finish();
         }
-
-        else if (id == R.id.nav_units) {
-            Intent myIntent = new Intent(this, Units.class);
-            startActivity(myIntent);
-            finish();
-        }
-
+        
 //        } else if (id == R.id.nav_slideshow) {
 //
 //        } else if (id == R.id.nav_manage) {
