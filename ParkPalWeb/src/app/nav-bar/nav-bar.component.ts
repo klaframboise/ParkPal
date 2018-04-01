@@ -20,6 +20,7 @@ export class NavBarComponent implements OnInit {
   distanceMetric = true;
   cookiesList: string[] = new Array();
   favorites: string[] = new Array();
+  nightTheme:HTMLElement=null;
   selectedFavorite: any;
   lastFocusedInput: string;
   favoriteMode: string;
@@ -55,6 +56,8 @@ export class NavBarComponent implements OnInit {
   initializeCookiesList() {
     this.cookiesList = [];
     this.favorites = [];
+    this.nightTheme= document.getElementById("nav");
+    console.log("initalize cookies = " + this.nightTheme.className);
     for (var x in this.cookieService.getAll()) {
       console.log(this.cookieService.get(x));
       if (this.cookieService.get(x).startsWith("<H>")){
@@ -199,9 +202,20 @@ export class NavBarComponent implements OnInit {
 
   //method to allow for night mode by changing between nav and nav.dark-mode
   toggleDarkLight() {
-    var body = document.getElementById("nav");
-    var currentClass = body.className;
-    body.className = currentClass == "dark-mode" ? "light-mode" : "dark-mode";
+  //  var body = document.getElementById("nav");
+  var themeMode = this.nightTheme;
+//    var currentClass = body.className;
+//    body.className = currentClass == "dark-mode" ? "light-mode" : "dark-mode";
+//    var body.className = this.night;
+
+
+    if(themeMode.className == "light-mode"){
+      themeMode.className="dark-mode";
+    }else{
+      themeMode.className="light-mode";
+    }
+
+    console.log("after switch = "+themeMode.className);
   }
 
 
