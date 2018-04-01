@@ -1,7 +1,6 @@
 package com.mcdevz.parkpal;
 
 import android.Manifest;
-import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,35 +12,26 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.TintableBackgroundView;
-import android.text.style.BackgroundColorSpan;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Switch;
-import android.widget.CompoundButton;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -60,6 +50,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.maps.android.data.geojson.GeoJsonFeature;
 import com.google.maps.android.data.geojson.GeoJsonLayer;
 import com.google.maps.android.data.geojson.GeoJsonPointStyle;
+import com.mcdevz.parkpal.directions.DirectionFinder;
+import com.mcdevz.parkpal.directions.DirectionFinderListener;
+import com.mcdevz.parkpal.directions.Route;
 import com.mcdevz.parkpal.gtfs.ScheduleSystem;
 import com.mcdevz.parkpal.uber.UberAPIController;
 import com.reginald.editspinner.EditSpinner;
@@ -68,14 +61,9 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import com.mcdevz.parkpal.directions.DirectionFinder;
-import com.mcdevz.parkpal.directions.DirectionFinderListener;
-import com.mcdevz.parkpal.directions.Route;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, DirectionFinderListener,
@@ -98,11 +86,13 @@ public class MainActivity extends AppCompatActivity
     private boolean parkedNRode;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private String mLocation;
-    private Switch nightSwitch;
+    //private Switch nightSwitch;
     private LinearLayout LinLayout;
     private TextView colour;
     private static final int PICKUP_YES_REQUEST = 1;
     static Boolean isTouched = false;
+    //private Night night = new Night();
+    public static Boolean nightMode = false;
 
 
     @Override
@@ -110,18 +100,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        LinLayout=(LinearLayout)findViewById(R.id.LinLayout);
-        nightSwitch=(Switch)findViewById(R.id.nightSwitch);
+
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -186,17 +167,13 @@ public class MainActivity extends AppCompatActivity
                     sendRequest();
                 }
             });
-            /*When the night toggle is enabled on the side menu, night mode is enabled.*/
-            nightSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (nightSwitch.isChecked()) {
-                        LinLayout.setBackgroundColor(Color.DKGRAY);
-                    }
-                    else LinLayout.setBackgroundColor(Color.parseColor("#b20001"));
 
-                }
-        });
+            LinLayout=(LinearLayout)findViewById(R.id.LinLayout);
+            if(nightMode == true){
+                LinLayout.setBackgroundColor(Color.DKGRAY);
+            }
+            else LinLayout.setBackgroundColor(Color.parseColor("#b20001"));
+
 
             // Setup location services
             mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -261,19 +238,28 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_F_A_Q_) {
+
+          Intent myIntent = new Intent(this, FAQSection.class);
+            startActivity(myIntent);
+        }
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        else if (id == R.id.nav_nightmode) {
 
-        } else if (id == R.id.nav_slideshow) {
+            Intent myIntent = new Intent(this, Night.class);
+            startActivity(myIntent);
+            finish();
+        }
 
-        } else if (id == R.id.nav_manage) {
+//        } else if (id == R.id.nav_slideshow) {
+//
+//        } else if (id == R.id.nav_manage) {
+//
+//        }/* else if (id == R.id.nav_share) {
 
-        }/* else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }*/
+//        } else if (id == R.id.nav_send) {
+//
+//        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -817,6 +803,9 @@ public class MainActivity extends AppCompatActivity
         }
         editor.commit();
     }
+
+
+
 
 }
 
