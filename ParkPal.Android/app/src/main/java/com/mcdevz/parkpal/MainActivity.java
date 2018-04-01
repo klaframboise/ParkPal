@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity
     private Button btnGo;
     private Button cFav;
     private Button dFav;
-    private Button bb;
     private RadioGroup transGroup;
     private RadioButton btnTrans;
     private String transportation;
@@ -166,7 +165,6 @@ public class MainActivity extends AppCompatActivity
             err = (TextView) findViewById(R.id.err);
             cFav = (Button) findViewById(R.id.cFav);
             dFav = (Button) findViewById(R.id.dFav);
-            bb = (Button) findViewById(R.id.bb);
             etOrigin = (EditSpinner) findViewById(R.id.etOrigin);
             etDestination = (EditSpinner) findViewById(R.id.etDestination);
             transGroup = (RadioGroup) findViewById(R.id.transGroup);
@@ -190,14 +188,6 @@ public class MainActivity extends AppCompatActivity
                 public void onClick(View v) {
                     addStringFav(etDestination.getText().toString());
 
-                }
-            });
-            final Intent myIntent = new Intent(this, Favs.class);
-            bb.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    startActivity(myIntent);
                 }
             });
 
@@ -272,19 +262,32 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_F_A_Q_) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        //} else if (id == R.id.nav_share) {
-
-        //} else if (id == R.id.nav_send) {
-
+            //Intent myIntent = new Intent(this, FAQSection.class);
+            //startActivity(myIntent);
         }
+        // Handle the camera action
+        else if (id == R.id.nav_nightmode) {
+
+            //Intent myIntent = new Intent(this, Night.class);
+            //startActivity(myIntent);
+            finish();
+        }
+        else if (id == R.id.nav_favorites) {
+            Intent myIntent = new Intent(this,Favs.class);
+            startActivity(myIntent);
+        }
+
+//        } else if (id == R.id.nav_slideshow) {
+//
+//        } else if (id == R.id.nav_manage) {
+//
+//        }/* else if (id == R.id.nav_share) {
+
+//        } else if (id == R.id.nav_send) {
+//
+//        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
