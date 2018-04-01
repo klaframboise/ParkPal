@@ -30,6 +30,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
         <activity
             android:name=".ScheduleBrowser"
             android:label="@string/title_activity_schedule_browser"
@@ -49,6 +50,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".FAQSection" />
+        <activity android:name=".Night"></activity>
     </application>
 
 </manifest>
